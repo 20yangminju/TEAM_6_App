@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.myapplication.ui.theme.Colors
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.writeLoginDataToJson
 
@@ -28,12 +29,12 @@ fun LoginScreen(context: Context, onLogin: (String, String) -> Unit, onSignUp: (
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val textfieldBackgroundColor = Color(0xFF2C2C2E)
+    val textfieldBackgroundColor = Colors.TextField
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF1C1C1E))
+            .background(Colors.Background)
     ) {
         Row(
             modifier = Modifier
@@ -44,7 +45,7 @@ fun LoginScreen(context: Context, onLogin: (String, String) -> Unit, onSignUp: (
             Text(
                 "로그인",
                 style = MaterialTheme.typography.titleLarge.copy(
-                    color = Color(0xFFD1D1D6),
+                    color = Colors.Title,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 ),
@@ -52,17 +53,17 @@ fun LoginScreen(context: Context, onLogin: (String, String) -> Unit, onSignUp: (
                 modifier = Modifier.weight(1f)
             )
         }
-        Divider(color = Color.White, thickness = 1.dp)
+        Divider(color = Colors.Divider, thickness = 2.dp)
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF1C1C1E))
+                .background(Colors.Background)
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text("이메일",
-                color = Color.White,
+                color = Colors.Label,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.fillMaxWidth(),
@@ -74,23 +75,23 @@ fun LoginScreen(context: Context, onLogin: (String, String) -> Unit, onSignUp: (
             TextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("이메일을 입력해주세요.", color = Color(0xFFD1D1D6))},
+                label = { Text("이메일을 입력해주세요.", color = Colors.Placeholder)},
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF2C2C2E), RoundedCornerShape(8.dp)),
+                    .background(Colors.TextField, RoundedCornerShape(8.dp)),
                 colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.DarkGray,
-                    textColor = Color(0xFFD1D1D6),
-                    cursorColor = Color(0xFFD1D1D6),
-                    focusedLabelColor = Color(0xFFD1D1D6),
-                    unfocusedLabelColor = Color(0xFFD1D1D6)
+                    containerColor = Colors.TextField,
+                    textColor = Colors.Text,
+                    cursorColor = Colors.Cursor,
+                    focusedLabelColor = Colors.Placeholder,
+                    unfocusedLabelColor = Colors.Placeholder
                 )
             )
 
             Spacer(modifier = Modifier.height(18.dp))
 
             Text("비밀번호",
-                color = Color.White,
+                color = Colors.Label,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.fillMaxWidth(),
@@ -100,17 +101,17 @@ fun LoginScreen(context: Context, onLogin: (String, String) -> Unit, onSignUp: (
             TextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("비밀번호를 입력해주세요.", color = Color(0xFFD1D1D6)) },
+                label = { Text("비밀번호를 입력해주세요.", color = Colors.Placeholder) },
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(textfieldBackgroundColor, RoundedCornerShape(8.dp)),
                 colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color.DarkGray,
-                    textColor = Color(0xFFD1D1D6),
-                    cursorColor = Color(0xFFD1D1D6),
-                    focusedLabelColor = Color(0xFFD1D1D6),
-                    unfocusedLabelColor = Color(0xFFD1D1D6)
+                    containerColor = Colors.TextField,
+                    textColor = Colors.Text,
+                    cursorColor = Colors.Cursor,
+                    focusedLabelColor = Colors.Placeholder,
+                    unfocusedLabelColor = Colors.Placeholder
                 )
             )
 
@@ -124,10 +125,10 @@ fun LoginScreen(context: Context, onLogin: (String, String) -> Unit, onSignUp: (
                 },
                 modifier = Modifier
                     .fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray),
+                colors = ButtonDefaults.buttonColors(containerColor = Colors.Button),
                 shape = RoundedCornerShape(8.dp)
             ) {
-                Text("로그인", color = Color(0xFFD1D1D6))
+                Text("로그인", color = Colors.ButtonText)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -138,7 +139,7 @@ fun LoginScreen(context: Context, onLogin: (String, String) -> Unit, onSignUp: (
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("처음이신가요? 회원가입하기",
-                    color = Color(0xFFD1D1D6),
+                    color = Colors.Text,
                     textAlign = TextAlign.Center
                 )}
             TextButton(
@@ -146,7 +147,7 @@ fun LoginScreen(context: Context, onLogin: (String, String) -> Unit, onSignUp: (
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("아이디 또는 비밀번호 찾기",
-                    color = Color(0xFFD1D1D6),
+                    color = Colors.Text,
                     textAlign = TextAlign.Center)
             }
 

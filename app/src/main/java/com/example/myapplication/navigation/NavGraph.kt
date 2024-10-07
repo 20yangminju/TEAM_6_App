@@ -37,7 +37,10 @@ fun SetupNavGraph(navController: NavHostController) {
         }
         composable("SignUp") {
             SignUpScreen(context,
-                done = {navController.navigate("Login")}
+                done = {navController.navigate("Login")},
+                onNavigateToLogin = {
+                    navController.navigate("Login") // 뒤로 가기 버튼(화살표 모양) 클릭시 로그인 화면으로 돌아간다.
+                }
                 )
         }
 
