@@ -18,14 +18,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.myapplication.network.RetrofitInstance
 import com.example.myapplication.ui.theme.Colors
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.writeLoginDataToJson
 
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun LoginScreen(context: Context, onLogin: (String, String) -> Unit, onSignUp: () -> Unit) {
+fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -120,7 +125,22 @@ fun LoginScreen(context: Context, onLogin: (String, String) -> Unit, onSignUp: (
 
             Button(
                 onClick = {
-                    onLogin(email, password)
+
+                    val loginRequest = LoginRequest(email, password)
+                    RetrofitInstance.api.login(loginRequest).enqueue(object : Callback<Void> {
+                        override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                            if(response.isSuccessful){
+                                Log.d("Login", "로그인 성공!")
+                                onLogin()
+                            } else {
+                                Log.d("Login", "로그인 실패: ${response.code()}")
+                            }
+                        }
+
+                        override fun onFailure(call: Call<Void>, t: Throwable) {
+                            Log.e("Login", "로그인 오류 : ${t.message}")
+                        }
+                    })
                     writeLoginDataToJson(context, email, password)
                 },
                 modifier = Modifier
@@ -162,6 +182,6 @@ fun LoginScreen(context: Context, onLogin: (String, String) -> Unit, onSignUp: (
 fun PreviewLoginScreen() {
     val context = LocalContext.current
     MyApplicationTheme {
-        LoginScreen(context = context, onLogin = { _, _ -> }, onSignUp = { })
+        LoginScreen(context = context, onLogin = { }, onSignUp = { })
     }
 }

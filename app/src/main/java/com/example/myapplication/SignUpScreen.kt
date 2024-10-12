@@ -1,6 +1,8 @@
 package com.example.myapplication
 
+import RegisterRequest
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,7 +17,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.myapplication.Server.RetrofitInstance
 import com.example.myapplication.ui.theme.Colors
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -167,8 +173,25 @@ fun SignUpScreen(context: Context, done : () -> Unit, onNavigateToLogin: () -> U
                     // 비밀번호 일치 여부 확인
                     if (password == confirmPassword) {
                         // 회원가입 로직 추가
-                        signUpMessage = "회원가입 완료!"
-                        done()
+                        val registerRequest = RegisterRequest(email, email, password)
+                        RetrofitInstance.api.register(registerRequest).enqueue(object : Callback<Void>{
+                            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                if (response.isSuccessful){
+                                    Log.d("Register", "회원가입 성공!")
+                                    signUpMessage = "회원가입 완료!"
+                                    done()
+                                }else{
+                                    Log.d("Register", "회원가입 실패: ${response.code()}")
+                                    signUpMessage = "회원가입 실패!"
+                                }
+                            }
+
+                            override fun onFailure(call: Call<Void>, t: Throwable) {
+                                Log.e("Register", "회원가입 오류 : ${t.message}")
+                            }
+
+                        })
+
                     } else {
                         signUpMessage = "비밀번호가 일치하지 않습니다."
                     }

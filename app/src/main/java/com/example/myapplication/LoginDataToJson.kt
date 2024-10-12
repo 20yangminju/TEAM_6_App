@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.content.Context
+import android.util.Log
 import com.example.myapplication.Formet.LoginData
 import com.google.gson.Gson
 import java.io.InputStreamReader
@@ -18,7 +19,7 @@ fun writeLoginDataToJson(context: Context, id: String, password: String) {
     val loginData = readLoginDataFromJson(context)
 
     // 사용자 입력으로 데이터 업데이트
-    loginData.id = id
+    loginData.email = id
     loginData.password = password
 
     // 업데이트된 데이터를 JSON 문자열로 변환
@@ -28,4 +29,5 @@ fun writeLoginDataToJson(context: Context, id: String, password: String) {
     OutputStreamWriter(context.openFileOutput("login.json", Context.MODE_PRIVATE)).use {
         it.write(json)
     }
+
 }

@@ -32,7 +32,7 @@ fun SetupNavGraph(navController: NavHostController) {
         }
         composable("Login") { 
             LoginScreen(context,
-                onLogin = { id, password -> navController.navigate("userInfo") },
+                onLogin = { navController.navigate("userInfo") },
                 onSignUp = { navController.navigate("SignUp") }
                 )
         // 필요에 따라 더 많은 화면을 추가할 수 있습니다.
