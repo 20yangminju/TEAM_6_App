@@ -2,6 +2,7 @@
 package com.example.myapplication.navigation
 
 import LoginScreen
+import SettingsScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
@@ -10,6 +11,7 @@ import androidx.navigation.compose.composable
 import com.example.myapplication.LoadUserInfoScreen // LoadUserInfoScreen 함수 임포트
 import com.example.myapplication.SignUpScreen
 import com.example.myapplication.FirstScreen
+import com.example.myapplication.RegisterCarScreen
 import com.example.myapplication.writeLoginDataToJson
 
 data class LoginData(
@@ -42,6 +44,26 @@ fun SetupNavGraph(navController: NavHostController) {
                     navController.navigate("Login") // 뒤로 가기 버튼(화살표 모양) 클릭시 로그인 화면으로 돌아간다.
                 }
                 )
+        }
+        composable("RegisterCar") {
+            RegisterCarScreen(context,
+                done = {navController.navigate("장치 고유 번호 등록")},//후에 장치 고유 번호 페이지 추가시 수정.
+                onNavigateToPre = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+
+        composable("Setting") {
+            SettingsScreen(
+                onItemClick = { item ->
+                    navController.navigate("ItemDetail/$item")
+                },
+                onNavigateToPre = {
+                    navController.popBackStack()
+                }
+            )
         }
 
     }
