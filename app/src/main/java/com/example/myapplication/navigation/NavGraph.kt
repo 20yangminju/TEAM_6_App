@@ -8,6 +8,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.myapplication.DeviceRegistration
 import com.example.myapplication.LoadUserInfoScreen // LoadUserInfoScreen 함수 임포트
 import com.example.myapplication.SignUpScreen
 import com.example.myapplication.FirstScreen
@@ -33,7 +34,8 @@ fun SetupNavGraph(navController: NavHostController) {
         composable("Login") { 
             LoginScreen(context,
                 onLogin = { navController.navigate("userInfo") },
-                onSignUp = { navController.navigate("SignUp") }
+                onSignUp = { navController.navigate("SignUp") } ,
+                onFirstScreen = { navController.navigate("FirstScreen")}
                 )
         // 필요에 따라 더 많은 화면을 추가할 수 있습니다.
         }
@@ -42,8 +44,10 @@ fun SetupNavGraph(navController: NavHostController) {
                 done = {navController.navigate("Login")},
                 onNavigateToLogin = {
                     navController.navigate("Login") // 뒤로 가기 버튼(화살표 모양) 클릭시 로그인 화면으로 돌아간다.
-                }
-                )
+                })
+        }
+        composable("DeviceRegistration") {
+            DeviceRegistration()
         }
         composable("RegisterCar") {
             RegisterCarScreen(context,
@@ -53,8 +57,6 @@ fun SetupNavGraph(navController: NavHostController) {
                 }
             )
         }
-
-
         composable("Setting") {
             SettingsScreen(
                 onItemClick = { item ->

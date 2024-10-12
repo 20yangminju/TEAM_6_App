@@ -5,6 +5,8 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,98 +32,114 @@ import retrofit2.Response
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit) {
+fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFirstScreen: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     val textfieldBackgroundColor = Colors.TextField
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Colors.Background)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                "로그인",
-                style = MaterialTheme.typography.titleLarge.copy(
-                    color = Colors.Title,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
-        }
-        Divider(color = Colors.Divider, thickness = 2.dp)
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Colors.Background)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+               verticalArrangement = Arrangement.Top
         ) {
-            Text("이메일",
-                color = Colors.Label,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Start
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // 이메일 작성 Field
-            TextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("이메일을 입력해주세요.", color = Colors.Placeholder)},
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Colors.TextField, RoundedCornerShape(8.dp)),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Colors.TextField,
-                    textColor = Colors.Text,
-                    cursorColor = Colors.Cursor,
-                    focusedLabelColor = Colors.Placeholder,
-                    unfocusedLabelColor = Colors.Placeholder
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+
+            ) {
+                IconButton(
+                    onClick = {
+                        onFirstScreen()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "뒤로 가기",
+                        tint = Colors.IconButton
+                    )
+                }
+                Text(
+                    "로그인",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = Colors.Title,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 )
-            )
-
-            Spacer(modifier = Modifier.height(18.dp))
-
-            Text("비밀번호",
-                color = Colors.Label,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Start
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            TextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("비밀번호를 입력해주세요.", color = Colors.Placeholder) },
-                visualTransformation = PasswordVisualTransformation(),
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Divider(color = Colors.Divider, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(textfieldBackgroundColor, RoundedCornerShape(8.dp)),
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Colors.TextField,
-                    textColor = Colors.Text,
-                    cursorColor = Colors.Cursor,
-                    focusedLabelColor = Colors.Placeholder,
-                    unfocusedLabelColor = Colors.Placeholder
+                    .fillMaxSize()
+                    .background(Colors.Background)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("이메일",
+                    color = Colors.Label,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Start
                 )
-            )
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // 이메일 작성 Field
+                TextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("이메일을 입력해주세요.", color = Colors.Placeholder)},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Colors.TextField, RoundedCornerShape(8.dp)),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Colors.TextField,
+                        textColor = Colors.Text,
+                        cursorColor = Colors.Cursor,
+                        focusedLabelColor = Colors.Placeholder,
+                        unfocusedLabelColor = Colors.Placeholder
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                Text("비밀번호",
+                    color = Colors.Label,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Start
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                TextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("비밀번호를 입력해주세요.", color = Colors.Placeholder) },
+                    visualTransformation = PasswordVisualTransformation(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(textfieldBackgroundColor, RoundedCornerShape(8.dp)),
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Colors.TextField,
+                        textColor = Colors.Text,
+                        cursorColor = Colors.Cursor,
+                        focusedLabelColor = Colors.Placeholder,
+                        unfocusedLabelColor = Colors.Placeholder
+                    )
+                )
 
 
-            Spacer(modifier = Modifier.height(60.dp))
+                Spacer(modifier = Modifier.height(60.dp))
 
             Button(
                 onClick = {
@@ -151,28 +169,27 @@ fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit) {
                 Text("로그인", color = Colors.ButtonText)
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-            // 회원 가입 버튼
-            TextButton(
-                onClick = { onSignUp() },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("처음이신가요? 회원가입하기",
-                    color = Colors.Text,
-                    textAlign = TextAlign.Center
-                )}
-            TextButton(
-                onClick = {/*추후 구현해야하는 로직*/},
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("아이디 또는 비밀번호 찾기",
-                    color = Colors.Text,
-                    textAlign = TextAlign.Center)
+                // 회원 가입 버튼
+                TextButton(
+                    onClick = { onSignUp() },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("처음이신가요? 회원가입하기",
+                        color = Colors.Text,
+                        textAlign = TextAlign.Center
+                    )}
+                TextButton(
+                    onClick = {/*추후 구현해야하는 로직*/},
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("아이디 또는 비밀번호 찾기",
+                        color = Colors.Text,
+                        textAlign = TextAlign.Center)
+                }
             }
-
         }
-
     }
 }
 
@@ -182,6 +199,6 @@ fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit) {
 fun PreviewLoginScreen() {
     val context = LocalContext.current
     MyApplicationTheme {
-        LoginScreen(context = context, onLogin = { }, onSignUp = { })
+        LoginScreen(context = context, onLogin = { }, onSignUp = { }, onFirstScreen = { })
     }
 }
