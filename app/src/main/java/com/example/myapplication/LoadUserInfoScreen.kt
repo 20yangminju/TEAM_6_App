@@ -17,7 +17,7 @@ data class User(
 )
 
 @Composable
-fun LoadUserInfoScreen(context: Context) {
+fun LoadUserInfoScreen(context: Context, onNavigateToChat: () -> Unit) {
     var user by remember { mutableStateOf<User?>(null) }
 
     LaunchedEffect(Unit) {
@@ -25,7 +25,7 @@ fun LoadUserInfoScreen(context: Context) {
     }
 
     user?.let {
-        UserInfoScreen(it)
+        UserInfoScreen(it, onNavigateToChat)
     } ?: run {
         Text(text = "Loading...", modifier = Modifier.padding(16.dp))
     }
@@ -40,7 +40,7 @@ private fun loadUserFromJson(context: Context): User {
 }
 
 @Composable
-fun UserInfoScreen(user: User) {
+fun UserInfoScreen(user: User, onNavigateToChat: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -52,5 +52,10 @@ fun UserInfoScreen(user: User) {
         Text(text = "Age: ${user.age}", style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(8.dp))
         Text(text = "Email: ${user.email}", style = MaterialTheme.typography.bodyMedium)
+
+        Button(onClick = onNavigateToChat, modifier = Modifier.fillMaxWidth()) { // ChatScreen으로 이동 버튼
+            Text("Go to Chat")
+        }
     }
+
 }

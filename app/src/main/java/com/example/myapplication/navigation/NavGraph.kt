@@ -1,6 +1,7 @@
 // NavGraph.kt
 package com.example.myapplication.navigation
 
+import ChatScreen
 import LoginScreen
 import SettingsScreen
 import androidx.compose.runtime.Composable
@@ -24,7 +25,8 @@ fun SetupNavGraph(navController: NavHostController) {
     val context = LocalContext.current
     NavHost(navController = navController, startDestination = "FirstScreen") {
         composable("userInfo") {
-            LoadUserInfoScreen(context) // 화면 컴포저블을 여기서 호출
+            LoadUserInfoScreen(context,
+                onNavigateToChat = { navController.navigate("ChatScreen") } ) // 화면 컴포저블을 여기서 호출
         }
         composable("FirstScreen") {
             FirstScreen(context, onNavigateToLogin = {
@@ -66,6 +68,10 @@ fun SetupNavGraph(navController: NavHostController) {
                     navController.popBackStack()
                 }
             )
+        }
+
+        composable("ChatScreen") {
+            ChatScreen()
         }
 
     }
