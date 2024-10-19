@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.myapplication.AlarmScreen
 import com.example.myapplication.DeviceRegistration
 import com.example.myapplication.LoadUserInfoScreen // LoadUserInfoScreen 함수 임포트
 import com.example.myapplication.SignUpScreen
@@ -49,16 +50,19 @@ fun SetupNavGraph(navController: NavHostController) {
                 onNavigateToSettings = {
                     navController.navigate("Setting") },
                 onNavigateToNotifications = {
-                    navController.navigate("DeviceRegistration")
+                    navController.navigate("AlarmScreen")
                 },
 
             )
+        }
+        composable("AlarmScreen") {
+            AlarmScreen()
         }
         composable("SignUp") {
             SignUpScreen(context,
                 done = {navController.navigate("Login")},
                 onNavigateToLogin = {
-                    navController.navigate("Setting") // 뒤로 가기 버튼(화살표 모양) 클릭시 로그인 화면으로 돌아간다.
+                    navController.navigate("Login") // 뒤로 가기 버튼(화살표 모양) 클릭시 로그인 화면으로 돌아간다.
                 })
         }
         composable("DeviceRegistration") {
