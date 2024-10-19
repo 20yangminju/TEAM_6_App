@@ -32,7 +32,8 @@ import retrofit2.Response
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFirstScreen: () -> Unit) {
+fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFirstScreen: () -> Unit,onNavigateToMain: () -> Unit)
+{
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -149,7 +150,8 @@ fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFi
                         override fun onResponse(call: Call<Void>, response: Response<Void>) {
                             if(response.isSuccessful){
                                 Log.d("Login", "로그인 성공!")
-                                onLogin()
+                                //onLogin()
+                                onNavigateToMain()
                             } else {
                                 Log.d("Login", "로그인 실패: ${response.code()}")
                             }
@@ -199,6 +201,6 @@ fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFi
 fun PreviewLoginScreen() {
     val context = LocalContext.current
     MyApplicationTheme {
-        LoginScreen(context = context, onLogin = { }, onSignUp = { }, onFirstScreen = { })
+        LoginScreen(context = context, onLogin = { }, onSignUp = { }, onFirstScreen = { }, onNavigateToMain = {})
     }
 }

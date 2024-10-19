@@ -6,10 +6,10 @@ import androidx.compose.ui.graphics.Color
 object Colors {
     val Background = Color.Black //배경화면
     val TextField = Color.DarkGray // 입력화면 바탕색
-    val Title = Color.White //앱 화면 타이틀 문구
+    val Title = Color(0xFF0086CB)//앱 화면 타이틀 문구
     val Label = Color.White
     val Placeholder = Color.Gray //설명문구
-    val Button = Color.DarkGray
+    val Button = Color(0xFF0086CB)
     val ButtonText = Color.White
     val Alert = Color.Red
     val Divider = Color.White

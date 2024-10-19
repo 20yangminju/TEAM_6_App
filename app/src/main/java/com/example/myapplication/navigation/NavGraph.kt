@@ -3,6 +3,7 @@ package com.example.myapplication.navigation
 
 import ChatScreen
 import LoginScreen
+import MainScreen
 import SettingsScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -37,15 +38,27 @@ fun SetupNavGraph(navController: NavHostController) {
             LoginScreen(context,
                 onLogin = { navController.navigate("userInfo") },
                 onSignUp = { navController.navigate("SignUp") } ,
-                onFirstScreen = { navController.navigate("FirstScreen")}
+                onFirstScreen = { navController.navigate("FirstScreen") },
+                onNavigateToMain = {
+                    navController.navigate("Main") }
                 )
         // 필요에 따라 더 많은 화면을 추가할 수 있습니다.
+        }
+        composable("Main") {
+            MainScreen(
+                onNavigateToSettings = {
+                    navController.navigate("Setting") },
+                onNavigateToNotifications = {
+                    navController.navigate("DeviceRegistration")
+                },
+
+            )
         }
         composable("SignUp") {
             SignUpScreen(context,
                 done = {navController.navigate("Login")},
                 onNavigateToLogin = {
-                    navController.navigate("Login") // 뒤로 가기 버튼(화살표 모양) 클릭시 로그인 화면으로 돌아간다.
+                    navController.navigate("Setting") // 뒤로 가기 버튼(화살표 모양) 클릭시 로그인 화면으로 돌아간다.
                 })
         }
         composable("DeviceRegistration") {
