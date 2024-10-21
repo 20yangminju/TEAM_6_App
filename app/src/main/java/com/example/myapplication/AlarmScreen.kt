@@ -32,13 +32,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.ui.theme.Colors
 
 data class NotificationItem(val icon: Int, val title: String, val date: String)
 
 // 알람 모음 화면
 @Composable
-fun AlarmScreen() {
+fun AlarmScreen(onNavigateToHome: () -> Unit, onBottomNavigationSelected: (String) -> Unit) {
     val notifications = listOf( // 이미지는 임시로 넣었습니다.
         NotificationItem(R.drawable.ic_launcher_foreground, "",""),
         NotificationItem(R.drawable.ic_launcher_foreground, "",""),
@@ -94,6 +95,16 @@ fun AlarmScreen() {
                 }
             }
         }
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            BottomNavigationBar(
+                currentScreen = "알림 내역",
+                onItemSelected = onBottomNavigationSelected
+            )
+        }
     }
 }
 
@@ -122,5 +133,8 @@ fun NotificationRow(item: NotificationItem) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewAlarmScreen() {
-    AlarmScreen()
+    AlarmScreen(
+        onNavigateToHome = {},
+        onBottomNavigationSelected = {}
+    )
 }

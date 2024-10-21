@@ -1,7 +1,6 @@
 package com.example.myapplication
 
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -101,7 +100,7 @@ fun DeviceRegistration() {
                 Text(
                     "장치 고유 번호를 등록해야만 이용가능합니다.",
                     fontSize = 30.sp,
-                    color = Colors.Text,
+                    color = Colors.ButtonText,
                     lineHeight = 40.sp
                     )
                 Spacer(modifier = Modifier.height(80.dp))

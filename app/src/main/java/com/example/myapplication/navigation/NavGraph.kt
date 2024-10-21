@@ -56,7 +56,14 @@ fun SetupNavGraph(navController: NavHostController) {
             )
         }
         composable("AlarmScreen") {
-            AlarmScreen()
+            AlarmScreen(
+                onNavigateToHome = {
+                    navController.navigate("homeScreen")
+                },
+                onBottomNavigationSelected = { selectedScreen ->
+                    navController.navigate(selectedScreen)
+                }
+            )
         }
         composable("SignUp") {
             SignUpScreen(context,

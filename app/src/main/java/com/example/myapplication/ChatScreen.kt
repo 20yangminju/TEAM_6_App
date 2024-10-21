@@ -1,9 +1,19 @@
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
+import com.example.myapplication.ui.theme.Colors
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
@@ -15,49 +25,108 @@ fun ChatScreen() {
     var chatHistory by remember { mutableStateOf("Chat history:\n") }
     val coroutineScope = rememberCoroutineScope()
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
-
-        // 채팅 히스토리 표시
-        Text(
-            text = chatHistory,
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Colors.Background)
+    ) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        )
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Top
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
 
-        Spacer(modifier = Modifier.height(8.dp))
+            ) {
+                IconButton(
+                    onClick = {
+                        //
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Home,
+                        contentDescription = "홈화면 이동",
+                        tint = Colors.IconButton
+                    )
+                }
+                Text(
+                    "챗봇",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        color = Colors.Title,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Divider(color = Colors.Divider, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
+            Spacer(modifier = Modifier.height(50.dp))
 
-        // 사용자 입력 필드
-        TextField(
-            value = userInput,
-            onValueChange = { userInput = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            label = { Text("Enter your message") }
-        )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
 
-        Spacer(modifier = Modifier.height(8.dp))
+                // 채팅 히스토리 표시
+                Text(
+                    text = chatHistory,
+                    color = Color.White, // 임시로 설정
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
 
-        // 전송 버튼
-        Button(
-            onClick = {
-                if (userInput.isNotEmpty()) {
-                    coroutineScope.launch {
-                        val response = sendMessageToGPT(userInput)
-                        chatHistory += "You: $userInput\nGPT: $response\n"
-                        userInput = ""
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // 사용자 입력 필드
+                    TextField(
+                        value = userInput,
+                        onValueChange = { userInput = it },
+                        modifier = Modifier
+                            .weight(0.8f)
+                            .padding(end = 8.dp),
+                        label = { Text("챗봇에게 메세지 보내기", color = Colors.Placeholder) },
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = Colors.TextField,
+                            focusedIndicatorColor = Colors.Placeholder,
+                            unfocusedIndicatorColor = Colors.Placeholder
+                        ),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+
+                    // 전송 버튼
+                    Button(
+                        onClick = {
+                            if (userInput.isNotEmpty()) {
+                                coroutineScope.launch {
+                                    val response = sendMessageToGPT(userInput)
+                                    chatHistory += "You: $userInput\nGPT: $response\n"
+                                    userInput = ""
+                                }
+                            }
+                        },
+                        modifier = Modifier.height(40.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Colors.Button)
+
+                    ) {
+                        Text("전송")
                     }
                 }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Send")
+            }
         }
     }
 }
+
+
+
 
 // GPT API 호출 함수 (기존처럼 정의)
 suspend fun sendMessageToGPT(userMessage: String): String {

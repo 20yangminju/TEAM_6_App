@@ -179,7 +179,7 @@ fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFi
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("처음이신가요? 회원가입하기",
-                        color = Colors.Text,
+                        color = Colors.Placeholder,
                         textAlign = TextAlign.Center
                     )}
                 TextButton(
@@ -187,7 +187,7 @@ fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFi
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text("아이디 또는 비밀번호 찾기",
-                        color = Colors.Text,
+                        color = Colors.Placeholder,
                         textAlign = TextAlign.Center)
                 }
             }
