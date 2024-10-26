@@ -25,14 +25,14 @@ fun SettingsScreen(
 
     Scaffold(
         backgroundColor = Colors.Background,
-        bottomBar = {
-            BottomNavigationBar(
-                currentScreen = "Settings",
-                onItemSelected = { screen ->
-                    // 네비게이션 바에서 선택된 화면에 맞게 처리
-                }
-            )
-        },
+//        bottomBar = {
+//            BottomNavigationBar(
+//                currentScreen = "Settings",
+//                onItemSelected = { screen ->
+//                    // 네비게이션 바에서 선택된 화면에 맞게 처리
+//                }
+//            )
+//        },
         topBar = {
             TopAppBar(
                 backgroundColor = Colors.Background,

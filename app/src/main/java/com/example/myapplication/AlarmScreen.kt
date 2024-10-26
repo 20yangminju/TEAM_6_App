@@ -66,6 +66,7 @@ fun AlarmScreen(onNavigateToHome: () -> Unit, onBottomNavigationSelected: (Strin
             ) {
                 IconButton(
                     onClick = {
+                        onNavigateToHome()
                         // 홈화면으로 이동
                     }
                 ) {
@@ -95,16 +96,16 @@ fun AlarmScreen(onNavigateToHome: () -> Unit, onBottomNavigationSelected: (Strin
                 }
             }
         }
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom
-        ) {
-            BottomNavigationBar(
-                currentScreen = "알림 내역",
-                onItemSelected = onBottomNavigationSelected
-            )
-        }
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize(),
+//            verticalArrangement = Arrangement.Bottom
+//        ) {
+//            BottomNavigationBar(
+//                currentScreen = "알림 내역",
+//                onItemSelected = onBottomNavigationSelected
+//            )
+//        }
     }
 }
 
