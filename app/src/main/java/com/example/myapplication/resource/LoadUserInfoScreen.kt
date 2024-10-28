@@ -1,5 +1,5 @@
 // UserInfoScreen.kt
-package com.example.myapplication
+package com.example.myapplication.resource
 
 import android.content.Context
 import androidx.compose.foundation.layout.*

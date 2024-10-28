@@ -1,3 +1,4 @@
+// NavGraph.kt
 package com.example.myapplication.navigation
 
 import BatteryManageScreen
@@ -15,7 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.myapplication.AlarmScreen
 import com.example.myapplication.DeviceRegistration
-import com.example.myapplication.LoadUserInfoScreen
+import com.example.myapplication.resource.LoadUserInfoScreen;
 import com.example.myapplication.SignUpScreen
 import com.example.myapplication.FirstScreen
 import com.example.myapplication.RegisterCarScreen
@@ -115,7 +116,8 @@ fun SetupNavGraph(navController: NavHostController) {
             )
         }
         composable("ChatScreen") {
-            ChatScreen()
+            ChatScreen(
+                onMainScreen = {navController.navigate("Main")})
         }
     }
 }

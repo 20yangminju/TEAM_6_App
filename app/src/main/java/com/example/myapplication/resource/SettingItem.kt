@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.resource
 
 data class SettingItem(
     val title: String,

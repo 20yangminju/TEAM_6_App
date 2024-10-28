@@ -1,7 +1,6 @@
-package com.example.myapplication
+package com.example.myapplication.resource
 
 import android.content.Context
-import android.util.Log
 import com.example.myapplication.Formet.LoginData
 import com.google.gson.Gson
 import java.io.InputStreamReader

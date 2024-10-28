@@ -1,7 +1,5 @@
 import android.content.Context
-import android.text.style.StyleSpan
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,9 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.fontResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -23,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.example.myapplication.network.RetrofitInstance
 import com.example.myapplication.ui.theme.Colors
 import com.example.myapplication.ui.theme.MyApplicationTheme
-import com.example.myapplication.writeLoginDataToJson
+import com.example.myapplication.resource.writeLoginDataToJson
 
 import retrofit2.Call
 import retrofit2.Callback

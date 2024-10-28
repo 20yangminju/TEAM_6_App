@@ -11,9 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.myapplication.SettingItem
+import com.example.myapplication.resource.SettingItem
 import com.example.myapplication.navigation.BottomNavigationBar
-import com.example.myapplication.settingItems
+import com.example.myapplication.resource.settingItems
 import com.example.myapplication.ui.theme.Colors
 
 @Composable

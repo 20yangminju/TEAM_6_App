@@ -1,30 +1,35 @@
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.example.myapplication.resource.ChatBubble
 import com.example.myapplication.ui.theme.Colors
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen() {
+fun ChatScreen(onMainScreen: () -> Unit) {
     // 사용자의 입력과 GPT의 응답을 저장할 상태
     var userInput by remember { mutableStateOf("") }
-    var chatHistory by remember { mutableStateOf("Chat history:\n") }
+    var chatHistory by remember { mutableStateOf(listOf<Pair<String, Boolean>>()) }
     val coroutineScope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
 
+    LaunchedEffect(Unit) {
+        chatHistory = chatHistory + Pair("환영합니다! 궁금한게 무엇인가요?", false)
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -44,7 +49,7 @@ fun ChatScreen() {
             ) {
                 IconButton(
                     onClick = {
-                        //
+                        onMainScreen()
                     }
                 ) {
                     Icon(
@@ -66,56 +71,57 @@ fun ChatScreen() {
             Divider(color = Colors.Divider, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(50.dp))
 
-            Column(
+            LazyColumn(
+                state = listState,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.Bottom
             ) {
-
-                // 채팅 히스토리 표시
-                Text(
-                    text = chatHistory,
-                    color = Color.White, // 임시로 설정
+                items(chatHistory) {(message, isUserMessage) ->
+                    ChatBubble(message = message, isUserMessage = isUserMessage)
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                TextField(
+                    value = userInput,
+                    onValueChange = { userInput = it },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
+                        .weight(0.8f)
+                        .padding(end = 8.dp),
+                    label = { Text("챗봇에게 메세지 보내기", color = Colors.Placeholder) },
+                    colors = TextFieldDefaults.textFieldColors(
+                        containerColor = Colors.TextField,
+                        focusedIndicatorColor = Colors.Placeholder,
+                        unfocusedIndicatorColor = Colors.Placeholder,
+                        textColor = Colors.Text
+                    ),
+                    shape = RoundedCornerShape(8.dp)
                 )
+                // 전송 버튼
+                Button(
+                    onClick = {
+                        if (userInput.isNotEmpty()) {
+                            coroutineScope.launch {
+                                chatHistory = chatHistory + Pair(userInput, true)
+                                val response = sendMessageToGPT(userInput)
+                                chatHistory = chatHistory + Pair(response, false)
+                                userInput = ""
 
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // 사용자 입력 필드
-                    TextField(
-                        value = userInput,
-                        onValueChange = { userInput = it },
-                        modifier = Modifier
-                            .weight(0.8f)
-                            .padding(end = 8.dp),
-                        label = { Text("챗봇에게 메세지 보내기", color = Colors.Placeholder) },
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = Colors.TextField,
-                            focusedIndicatorColor = Colors.Placeholder,
-                            unfocusedIndicatorColor = Colors.Placeholder
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    )
-
-                    // 전송 버튼
-                    Button(
-                        onClick = {
-                            if (userInput.isNotEmpty()) {
-                                coroutineScope.launch {
-                                    val response = sendMessageToGPT(userInput)
-                                    chatHistory += "You: $userInput\nGPT: $response\n"
-                                    userInput = ""
+                                val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                                if (lastVisibleItemIndex == null || lastVisibleItemIndex >= chatHistory.size - 3) {
+                                    // 마지막 메시지 근처에 있을 때만 자동 스크롤
+                                    listState.animateScrollToItem(chatHistory.size - 1)
                                 }
                             }
-                        },
-                        modifier = Modifier.height(40.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Colors.Button)
-
+                        }
+                    },
+                    modifier = Modifier.height(40.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Colors.Button)
                     ) {
                         Text("전송")
                     }
@@ -123,10 +129,6 @@ fun ChatScreen() {
             }
         }
     }
-}
-
-
-
 
 // GPT API 호출 함수 (기존처럼 정의)
 suspend fun sendMessageToGPT(userMessage: String): String {
@@ -155,12 +157,4 @@ suspend fun sendMessageToGPT(userMessage: String): String {
             "HTTP Error: ${e.code()} - ${e.message()}"
         }
     }
-}
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewChatScreen() {
-    ChatScreen()
 }

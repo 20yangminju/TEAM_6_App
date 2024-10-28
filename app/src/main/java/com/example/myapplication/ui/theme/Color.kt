@@ -16,6 +16,8 @@ object Colors {
     val IconButton = Color.White // Icon 버튼 색깔
     val Cursor = Color.White
     val Text = Color.White // 일반 텍스트
+    var ChatGPTBox = Color(0xFF00C6DC)
+    var MyBox = Color(0xFFFFEB3B)
 }
 
 val Purple80 = Color(0xFFD0BCFF)
