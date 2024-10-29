@@ -81,6 +81,7 @@ dependencies {
     implementation ("com.google.code.gson:gson:2.10.1")
     implementation("androidx.compose.material:material:1.7.3")
     implementation("androidx.navigation:navigation-compose:2.8.2")
+    implementation("androidx.test.services:storage:1.5.0")
 
 
     testImplementation("junit:junit:4.13.2")

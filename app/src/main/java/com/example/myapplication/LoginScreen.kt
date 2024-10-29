@@ -28,11 +28,9 @@ import retrofit2.Response
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 
-fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFirstScreen: () -> Unit,onNavigateToMain: () -> Unit)
-{
+fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFirstScreen: () -> Unit,onNavigateToMain: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-
     val textfieldBackgroundColor = Colors.TextField
 
     Box(
@@ -44,7 +42,7 @@ fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFi
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-               verticalArrangement = Arrangement.Top
+            verticalArrangement = Arrangement.Top
         ) {
             Row(
                 modifier = Modifier
@@ -82,7 +80,8 @@ fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFi
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("이메일",
+                Text(
+                    "이메일",
                     color = Colors.Label,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
@@ -95,7 +94,7 @@ fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFi
                 TextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("이메일을 입력해주세요.", color = Colors.Placeholder)},
+                    label = { Text("이메일을 입력해주세요.", color = Colors.Placeholder) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Colors.TextField, RoundedCornerShape(8.dp)),
@@ -110,7 +109,8 @@ fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFi
 
                 Spacer(modifier = Modifier.height(18.dp))
 
-                Text("비밀번호",
+                Text(
+                    "비밀번호",
                     color = Colors.Label,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
@@ -138,34 +138,34 @@ fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFi
 
                 Spacer(modifier = Modifier.height(60.dp))
 
-            Button(
-                onClick = {
+                Button(
+                    onClick = {
 
-                    val loginRequest = LoginRequest(email, password)
-                    RetrofitInstance.api.login(loginRequest).enqueue(object : Callback<Void> {
-                        override fun onResponse(call: Call<Void>, response: Response<Void>) {
-                            if(response.isSuccessful){
-                                Log.d("Login", "로그인 성공!")
-                                //onLogin()
-                                onNavigateToMain()
-                            } else {
-                                Log.d("Login", "로그인 실패: ${response.code()}")
+                        val loginRequest = LoginRequest(email, password)
+                        RetrofitInstance.api.login(loginRequest).enqueue(object : Callback<Void> {
+                            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                                if (response.isSuccessful) {
+                                    Log.d("Login", "로그인 성공!")
+                                    //onLogin()
+                                    onNavigateToMain()
+                                } else {
+                                    Log.d("Login", "로그인 실패: ${response.code()}")
+                                }
                             }
-                        }
 
-                        override fun onFailure(call: Call<Void>, t: Throwable) {
-                            Log.e("Login", "로그인 오류 : ${t.message}")
-                        }
-                    })
-                    writeLoginDataToJson(context, email, password)
-                },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Colors.Button),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text("로그인", color = Colors.ButtonText)
-            }
+                            override fun onFailure(call: Call<Void>, t: Throwable) {
+                                Log.e("Login", "로그인 오류 : ${t.message}")
+                            }
+                        })
+                        writeLoginDataToJson(context, email, password)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Colors.Button),
+                    shape = RoundedCornerShape(8.dp)
+                ) {
+                    Text("로그인", color = Colors.ButtonText)
+                }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
@@ -174,18 +174,23 @@ fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFi
                     onClick = { onSignUp() },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("처음이신가요? 회원가입하기",
+                    Text(
+                        "처음이신가요? 회원가입하기",
                         color = Colors.Placeholder,
                         textAlign = TextAlign.Center
-                    )}
+                    )
+                }
                 TextButton(
-                    onClick = {/*추후 구현해야하는 로직*/},
+                    onClick = {/*추후 구현해야하는 로직*/ },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("아이디 또는 비밀번호 찾기",
+                    Text(
+                        "아이디 또는 비밀번호 찾기",
                         color = Colors.Placeholder,
-                        textAlign = TextAlign.Center)
+                        textAlign = TextAlign.Center
+                    )
                 }
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }
