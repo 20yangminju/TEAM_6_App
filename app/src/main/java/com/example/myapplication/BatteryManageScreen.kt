@@ -3,12 +3,14 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.ui.theme.Colors
+import com.example.myapplication.network.RetrofitInstance
+import kotlinx.coroutines.launch
 
 @Composable
 fun BatteryManageScreen(
@@ -16,6 +18,9 @@ fun BatteryManageScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToNotifications: () -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    var batteryData by remember { mutableStateOf<BatteryRequest?>(null) }
+
     Scaffold(
         backgroundColor = Colors.Background,
         topBar = {
@@ -24,7 +29,6 @@ fun BatteryManageScreen(
                     title = { Text(text = "EV-PrepareCareFully", color = Colors.Title) },
                     backgroundColor = Colors.Background,
                     actions = {
-                        // 환경설정 아이콘 버튼
                         IconButton(onClick = { onNavigateToSettings() }) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
@@ -32,7 +36,6 @@ fun BatteryManageScreen(
                                 tint = Colors.IconButton
                             )
                         }
-                        // 알림 아이콘 버튼
                         IconButton(onClick = { onNavigateToNotifications() }) {
                             Icon(
                                 imageVector = Icons.Default.Notifications,
@@ -42,26 +45,50 @@ fun BatteryManageScreen(
                         }
                     }
                 )
-                // Divider 추가
                 Divider(color = Colors.Divider, thickness = 1.dp)
             }
         },
         bottomBar = {
-            // BottomNavigationBar 추가
             BottomNavigationBar(
                 navController = navController,
                 currentScreen = navController.currentDestination?.route ?: "main"
             )
         },
         content = { innerPadding ->
-            // 메인 화면의 콘텐츠
-            Box(
+            // BatteryInfoScreen의 내용을 추가
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
+                    .padding(16.dp)
             ) {
-                // 메인 화면의 내용을 여기에 추가
-                Text(text = "배터리" ,color = Colors.Text)
+                Text(text = "배터리 정보", color = Colors.Text, style = MaterialTheme.typography.h6)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(onClick = {
+                    coroutineScope.launch {
+                        try {
+                            batteryData = RetrofitInstance.api.batteryInfo()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }) {
+                    Text("Get Battery Info")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // 배터리 데이터 표시
+                batteryData?.let {
+                    Text("Voltage: ${it.auxiliaryBatteryVoltage}", color = Colors.Text)
+                    Text("Battery Power: ${it.batteryPower}", color = Colors.Text)
+                    Text("State of Charge: ${it.stateOfChargeDisplay}", color = Colors.Text)
+                    Text("Charging Status: ${if (it.hvChargingStatus) "Charging" else "Not Charging"}", color = Colors.Text)
+                    Text("Battery Current: ${it.batteryCurrent}", color = Colors.Text)
+                    Text("Last Updated: ${it.createdAt}", color = Colors.Text)
+                } ?: Text("No battery data available", color = Colors.Text)
             }
         }
     )
