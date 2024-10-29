@@ -1,16 +1,15 @@
 import retrofit2.Call
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.POST
 
 // 데이터 모델 (로그인 및 회원가입)
 data class LoginRequest(val email: String, val password: String)
 data class RegisterRequest(val nickname: String, val email: String, val password: String)
-data class BatteryRequest(
-    val auxiliaryBatteryVoltage: Int, val batteryPower: Float,
-    val stateOfChargeDisplay: Float, val hvChargingStatus: Boolean,
-    val batteryCurrent: Float, val createdAt: String
-    )
+data class TempResponse(val car_device_number: String, val module_number: Int,
+                        val module_temp: Float, val created_at: String)
+
+data class TempRequest(val car_device_number: String)
+
 
 interface ApiService {
 
@@ -20,6 +19,6 @@ interface ApiService {
     @POST("/register")
     fun register(@Body registerRequest: RegisterRequest): Call<Void>  // 회원가입 요청
 
-    @GET("/cars/batteryStatus")
-    suspend fun batteryInfo():BatteryRequest
+    @POST("/cars/batteryTemp/app")
+    suspend fun temperature(@Body tempRequest: TempRequest): TempResponse
 }

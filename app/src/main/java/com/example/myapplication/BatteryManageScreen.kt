@@ -1,3 +1,4 @@
+import androidx.annotation.Nullable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -19,7 +20,8 @@ fun BatteryManageScreen(
     onNavigateToNotifications: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
-    var batteryData by remember { mutableStateOf<BatteryRequest?>(null) }
+    var temperatureData by remember { mutableStateOf<TempResponse?>(null) }
+    var isRequestFailed by remember { mutableStateOf(false) }
 
     Scaffold(
         backgroundColor = Colors.Background,
@@ -69,26 +71,31 @@ fun BatteryManageScreen(
                 Button(onClick = {
                     coroutineScope.launch {
                         try {
-                            batteryData = RetrofitInstance.api.batteryInfo()
+                            isRequestFailed = false
+                            val request = TempRequest(car_device_number = "674마5387")
+                            temperatureData = RetrofitInstance.api.temperature(request)
                         } catch (e: Exception) {
                             e.printStackTrace()
+                            isRequestFailed = true
+                            temperatureData = null
                         }
                     }
                 }) {
-                    Text("Get Battery Info")
+                    Text("Get Battery Temp")
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 배터리 데이터 표시
-                batteryData?.let {
-                    Text("Voltage: ${it.auxiliaryBatteryVoltage}", color = Colors.Text)
-                    Text("Battery Power: ${it.batteryPower}", color = Colors.Text)
-                    Text("State of Charge: ${it.stateOfChargeDisplay}", color = Colors.Text)
-                    Text("Charging Status: ${if (it.hvChargingStatus) "Charging" else "Not Charging"}", color = Colors.Text)
-                    Text("Battery Current: ${it.batteryCurrent}", color = Colors.Text)
-                    Text("Last Updated: ${it.createdAt}", color = Colors.Text)
-                } ?: Text("No battery data available", color = Colors.Text)
+                if (isRequestFailed) {
+                    Text("Failed to retrieve data.", color = Colors.Text)
+                } else {
+                    temperatureData?.let {
+                        Text("Temperature: ${it.module_temp}", color = Colors.Text)
+                        Text("Module Number: ${it.module_number}", color = Colors.Text)
+                        Text("Car Number: ${it.car_device_number}", color = Colors.Text)
+                        Text("Creat At : ${it.created_at}", color = Colors.Text)
+                    } ?: Text("No temperature data available", color = Colors.Text)
+                }
             }
         }
     )
