@@ -11,7 +11,7 @@ import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.ui.theme.Colors
 
 @Composable
-fun ChargeScreen(
+fun BatteryTemperatureScreen(
     navController: NavController,
     onNavigateToSettings: () -> Unit,
     onNavigateToNotifications: () -> Unit
@@ -61,7 +61,7 @@ fun ChargeScreen(
                     .padding(innerPadding)
             ) {
                 // 메인 화면의 내용을 여기에 추가
-                Text(text = "충전" ,color = Colors.Text)
+                Text(text = "배터리 온도 구현용" ,color = Colors.Text)
             }
         }
     )

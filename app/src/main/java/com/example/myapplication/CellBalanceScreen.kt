@@ -1,21 +1,29 @@
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.ui.theme.Colors
 
 @Composable
-fun StatisticsScreen(
+fun CellBalanceScreen(
     navController: NavController,
     onNavigateToSettings: () -> Unit,
     onNavigateToNotifications: () -> Unit
 ) {
+
     Scaffold(
         backgroundColor = Colors.Background,
         topBar = {
@@ -24,7 +32,6 @@ fun StatisticsScreen(
                     title = { Text(text = "EV-PrepareCareFully", color = Colors.Title) },
                     backgroundColor = Colors.Background,
                     actions = {
-                        // 환경설정 아이콘 버튼
                         IconButton(onClick = { onNavigateToSettings() }) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
@@ -32,7 +39,6 @@ fun StatisticsScreen(
                                 tint = Colors.IconButton
                             )
                         }
-                        // 알림 아이콘 버튼
                         IconButton(onClick = { onNavigateToNotifications() }) {
                             Icon(
                                 imageVector = Icons.Default.Notifications,
@@ -42,27 +48,30 @@ fun StatisticsScreen(
                         }
                     }
                 )
-                // Divider 추가
                 Divider(color = Colors.Divider, thickness = 1.dp)
             }
         },
         bottomBar = {
-            // BottomNavigationBar 추가
             BottomNavigationBar(
                 navController = navController,
                 currentScreen = navController.currentDestination?.route ?: "main"
             )
         },
         content = { innerPadding ->
-            // 메인 화면의 콘텐츠
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
+                    .padding(16.dp)
             ) {
-                // 메인 화면의 내용을 여기에 추가
-                Text(text = "통계" ,color = Colors.Text)
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                }
             }
         }
     )
 }
+

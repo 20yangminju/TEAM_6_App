@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,7 +48,7 @@ import com.example.myapplication.ui.theme.Colors
 // 장치 고유 번호 등록 화면
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeviceRegistration() {
+fun DeviceRegistration(context: Context, done : () -> Unit) {
     var showToolTip by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
@@ -164,11 +166,12 @@ fun DeviceRegistration() {
             Spacer(modifier = Modifier.height(60.dp))
 
             Button(
-                    onClick = {},
+                    onClick = {done()},
                     modifier = Modifier
                         .fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = Colors.Button),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(8.dp),
+
                 ) {
                         Text( "장치 고유 번호 등록", color = Colors.ButtonText)
                 }
@@ -180,6 +183,6 @@ fun DeviceRegistration() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewDeviceRegistration() {
-    DeviceRegistration()
+    DeviceRegistration(context = LocalContext.current, done = {})
 }
 

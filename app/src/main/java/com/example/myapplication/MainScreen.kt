@@ -87,7 +87,7 @@ fun MainScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // 배터리 온도 측정/현재 배터리 충전량
+                // 배터리 온도 측정
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -96,7 +96,7 @@ fun MainScreen(
                         modifier = Modifier
                             .weight(1f)
                             .background(Colors.IconButton)
-                            .clickable { navController.navigate("manage") }
+                            .clickable { navController.navigate("batteryTemperature") }
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -117,23 +117,11 @@ fun MainScreen(
                 }
                 Spacer(modifier = Modifier.height(10.dp))
 
-                //  Divider
+                // Divider
                 Divider(color = Colors.Text, thickness = 1.dp)
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // 배터리 소모 속도
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Colors.Placeholder)
-                        .clickable { navController.navigate("statistics") }
-                        .padding(16.dp),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Text(text = "배터리 소모 속도", color = Colors.Text)
-                }
-                Spacer(modifier = Modifier.height(10.dp))
                 // 총 주행 거리
                 Box(
                     modifier = Modifier
@@ -142,9 +130,10 @@ fun MainScreen(
                         .padding(16.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    Text(text = "총 주행 거리:", color = Colors.Text)
+                    Text(text = "총 주행 거리:  km", color = Colors.Text)
                 }
                 Spacer(modifier = Modifier.height(10.dp))
+
                 // 총 주행 시간
                 Box(
                     modifier = Modifier
@@ -156,6 +145,7 @@ fun MainScreen(
                     Text(text = "총 주행 시간:", color = Colors.Text)
                 }
                 Spacer(modifier = Modifier.height(10.dp))
+
                 // 연비
                 Box(
                     modifier = Modifier
@@ -164,7 +154,7 @@ fun MainScreen(
                         .padding(16.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    Text(text = "연비:", color = Colors.Text)
+                    Text(text = "연비: km/l", color = Colors.Text)
                 }
             }
         }

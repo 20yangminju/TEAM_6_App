@@ -6,14 +6,12 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+
 fun Project.getApiKey(propertyKey: String) : String {
     val properties = Properties()
     properties.load(project.rootProject.file("local.properties").inputStream())
     return properties.getProperty(propertyKey, "")
 }
-
-
-
 
 val openAiApiKey = getApiKey("openai_api_key")
 
@@ -109,4 +107,3 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
 
 }
-

@@ -18,6 +18,7 @@ object Colors {
     val Text = Color.White // 일반 텍스트
     var ChatGPTBox = Color(0xFF00C6DC)
     var MyBox = Color(0xFFFFEB3B)
+    val CarBox = Color(0xFF5DC19B)
 }
 
 val Purple80 = Color(0xFFD0BCFF)

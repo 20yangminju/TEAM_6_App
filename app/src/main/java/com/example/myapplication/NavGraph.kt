@@ -2,13 +2,13 @@
 package com.example.myapplication.navigation
 
 import BatteryManageScreen
+import BatteryTemperatureScreen
 import CarModeScreen
-import ChargeScreen
+import CellBalanceScreen
 import ChatScreen
 import LoginScreen
 import MainScreen
 import SettingsScreen
-import StatisticsScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
@@ -53,28 +53,23 @@ fun SetupNavGraph(navController: NavHostController) {
             MainScreen(
                 navController = navController,
                 onNavigateToSettings = { navController.navigate("Setting") },
-                onNavigateToNotifications = { navController.navigate("AlarmScreen") }
+                onNavigateToNotifications = { navController.navigate("AlarmScreen")}
             )
-        }
-        composable("charge") { ChargeScreen(
-            navController = navController,
-            onNavigateToSettings = { navController.navigate("Setting") },
-            onNavigateToNotifications = { navController.navigate("AlarmScreen") }
 
-        ) }
-        composable("car") { CarModeScreen(
+        }
+        composable("operationMode") { CarModeScreen(
                 navController = navController,
                 onNavigateToSettings = { navController.navigate("Setting") },
                 onNavigateToNotifications = { navController.navigate("AlarmScreen") }
 
         ) }
-        composable("manage") { BatteryManageScreen(
+        composable("batteryTemperature") { BatteryTemperatureScreen(
             navController = navController,
             onNavigateToSettings = { navController.navigate("Setting") },
             onNavigateToNotifications = { navController.navigate("AlarmScreen") }
 
         ) }
-        composable("graph") { StatisticsScreen(
+        composable("cellBalance") { CellBalanceScreen(
             navController = navController,
             onNavigateToSettings = { navController.navigate("Setting") },
             onNavigateToNotifications = { navController.navigate("AlarmScreen") }
@@ -92,12 +87,16 @@ fun SetupNavGraph(navController: NavHostController) {
         }
         composable("SignUp") {
             SignUpScreen(context,
-                done = { navController.navigate("Login") },
+                //done = { navController.navigate("Login")
+                done = { navController.navigate("RegisterCar")},
                 onNavigateToLogin = { navController.navigate("Login") }
             )
         }
         composable("DeviceRegistration") {
-            DeviceRegistration()
+            DeviceRegistration(
+                context = context,
+                done = { navController.navigate("main") }
+            )
         }
         composable("RegisterCar") {
             RegisterCarScreen(context,
@@ -117,7 +116,8 @@ fun SetupNavGraph(navController: NavHostController) {
         }
         composable("ChatScreen") {
             ChatScreen(
-                onMainScreen = {navController.navigate("Main")})
+                navController = navController,
+                onMainScreen = {navController.navigate("main")})
         }
     }
 }
