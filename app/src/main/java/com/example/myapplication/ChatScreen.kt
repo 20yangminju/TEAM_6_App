@@ -10,9 +10,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.resource.ChatBubble
@@ -22,7 +21,10 @@ import retrofit2.HttpException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen(onMainScreen: () -> Unit, navController: NavController) {
+fun ChatScreen(
+    onMainScreen: () -> Unit,
+    navController: NavController,
+) {
     // 사용자의 입력과 GPT의 응답을 저장할 상태
     var userInput by remember { mutableStateOf("") }
     var chatHistory by remember { mutableStateOf(listOf<Pair<String, Boolean>>()) }
@@ -32,9 +34,35 @@ fun ChatScreen(onMainScreen: () -> Unit, navController: NavController) {
     LaunchedEffect(Unit) {
         chatHistory = chatHistory + Pair("환영합니다! 궁금한게 무엇인가요?", false)
     }
+
     Scaffold(
+        topBar = {
+            Column {
+                TopAppBar(
+                    title = { Text(text = "AI 챗봇", color = Colors.Title) },
+                    colors = TopAppBarDefaults.mediumTopAppBarColors(
+                        containerColor = Colors.Background
+                    ),
+                    actions = {
+                        IconButton(onClick = { onMainScreen() }) {
+                            Icon(
+                                imageVector = Icons.Default.Home,
+                                contentDescription = "홈",
+                                tint = Colors.IconButton
+                            )
+                        }
+                    }
+                )
+                Divider(
+                    color = Colors.Divider,
+                    thickness = 1.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                )
+            }
+        },
         bottomBar = {
-            // BottomNavigationBar 추가
             BottomNavigationBar(
                 navController = navController,
                 currentScreen = navController.currentDestination?.route ?: "main"
@@ -53,41 +81,7 @@ fun ChatScreen(onMainScreen: () -> Unit, navController: NavController) {
                         .padding(16.dp),
                     verticalArrangement = Arrangement.Top
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-
-                    ) {
-                        IconButton(
-                            onClick = {
-                                onMainScreen()
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Home,
-                                contentDescription = "홈화면 이동",
-                                tint = Colors.IconButton
-                            )
-                        }
-                        Text(
-                            "챗봇",
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                color = Colors.Title,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                        )
-                    }
                     Spacer(modifier = Modifier.height(16.dp))
-                    Divider(
-                        color = Colors.Divider,
-                        thickness = 2.dp,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Spacer(modifier = Modifier.height(50.dp))
-
                     LazyColumn(
                         state = listState,
                         modifier = Modifier
@@ -101,15 +95,19 @@ fun ChatScreen(onMainScreen: () -> Unit, navController: NavController) {
                         }
                     }
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         TextField(
                             value = userInput,
                             onValueChange = { userInput = it },
                             modifier = Modifier
-                                .weight(0.8f)
-                                .padding(end = 8.dp),
+                                .weight(1f)
+                                .background(Colors.TextField, RoundedCornerShape(12.dp))
+                                .padding(4.dp)
+                                .shadow(4.dp, RoundedCornerShape(12.dp)),
                             label = { Text("챗봇에게 메세지 보내기", color = Colors.Placeholder) },
                             colors = TextFieldDefaults.textFieldColors(
                                 containerColor = Colors.TextField,
@@ -119,7 +117,7 @@ fun ChatScreen(onMainScreen: () -> Unit, navController: NavController) {
                             ),
                             shape = RoundedCornerShape(8.dp)
                         )
-                        // 전송 버튼
+                        Spacer(modifier = Modifier.width(8.dp))
                         Button(
                             onClick = {
                                 if (userInput.isNotEmpty()) {
@@ -132,14 +130,15 @@ fun ChatScreen(onMainScreen: () -> Unit, navController: NavController) {
                                         val lastVisibleItemIndex =
                                             listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
                                         if (lastVisibleItemIndex == null || lastVisibleItemIndex >= chatHistory.size - 3) {
-                                            // 마지막 메시지 근처에 있을 때만 자동 스크롤
                                             listState.animateScrollToItem(chatHistory.size - 1)
                                         }
                                     }
                                 }
                             },
-                            modifier = Modifier.height(40.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Colors.Button)
+                            modifier = Modifier.height(48.dp)
+                                .padding(horizontal = 8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Colors.Button),
+                            shape = RoundedCornerShape(16.dp)
                         ) {
                             Text("전송")
                         }

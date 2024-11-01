@@ -1,6 +1,5 @@
 package com.example.myapplication
 
-import android.graphics.Paint.Align
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,13 +25,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.ui.theme.Colors
 
 data class NotificationItem(val icon: Int, val title: String, val date: String)
@@ -96,16 +92,6 @@ fun AlarmScreen(onNavigateToHome: () -> Unit, onBottomNavigationSelected: (Strin
                 }
             }
         }
-//        Column(
-//            modifier = Modifier
-//                .fillMaxSize(),
-//            verticalArrangement = Arrangement.Bottom
-//        ) {
-//            BottomNavigationBar(
-//                currentScreen = "알림 내역",
-//                onItemSelected = onBottomNavigationSelected
-//            )
-//        }
     }
 }
 
@@ -130,12 +116,4 @@ fun NotificationRow(item: NotificationItem) {
         }
     }
 }
-// 편한 디자인을 위한 Preview
-@Preview(showBackground = true)
-@Composable
-fun PreviewAlarmScreen() {
-    AlarmScreen(
-        onNavigateToHome = {},
-        onBottomNavigationSelected = {}
-    )
-}
+

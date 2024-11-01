@@ -80,6 +80,7 @@ dependencies {
     implementation("androidx.compose.material:material:1.7.3")
     implementation("androidx.navigation:navigation-compose:2.8.2")
     implementation("androidx.test.services:storage:1.5.0")
+    implementation("androidx.room:room-common:2.6.1")
 
 
     testImplementation("junit:junit:4.13.2")
