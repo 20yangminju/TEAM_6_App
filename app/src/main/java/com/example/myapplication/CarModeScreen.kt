@@ -147,6 +147,15 @@ fun CarModeScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
+                Divider(
+                    color = Colors.Divider,
+                    thickness = 1.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp) // 상하에만 패딩 적용
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+
                 // 배터리 현황 및 주행 정보
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -167,7 +176,7 @@ fun CarModeScreen(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
-                            Text("현재 배터리 현황", color = Colors.Text, fontSize = 16.sp)
+                            Text("현재 배터리 현황", color = Colors.Text, fontSize = 18.sp)
                             Box(
                                 modifier = Modifier
                                     .size(100.dp),
@@ -211,7 +220,7 @@ fun CarModeScreen(
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(64.dp))
+                        Spacer(modifier = Modifier.height(50.dp))
 
                         // 총 주행 시간
                         Box(
