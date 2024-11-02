@@ -51,7 +51,7 @@ fun ShowTemperatureDialog(showDialog: Boolean, onDismiss: () -> Unit) {
             },
             text = {
                 Text(
-                    text = "배터리 과열이 감지 감지되었습니다. 차량을 확인해주세요.",
+                    text = "배터리 과열이 감지되었습니다. 차량을 확인해주세요.",
                     style = MaterialTheme.typography.bodyMedium
                 )
             },

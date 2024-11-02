@@ -12,6 +12,8 @@ data class TempRequest(val car_device_number: String, val module_number: Int)
 
 
 interface ApiService {
+    @POST("/cars/batteryTemp/app")
+    suspend fun temperature(@Body tempRequest: TempRequest): TempResponse
 
     @POST("/login")
     fun login(@Body loginRequest: LoginRequest): Call<Void>  // 서버로 로그인 요청
@@ -19,6 +21,5 @@ interface ApiService {
     @POST("/register")
     fun register(@Body registerRequest: RegisterRequest): Call<Void>  // 회원가입 요청
 
-    @POST("/cars/batteryTemp/app")
-    suspend fun temperature(@Body tempRequest: TempRequest): TempResponse
+
 }
