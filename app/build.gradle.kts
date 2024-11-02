@@ -6,14 +6,12 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+
 fun Project.getApiKey(propertyKey: String) : String {
     val properties = Properties()
     properties.load(project.rootProject.file("local.properties").inputStream())
     return properties.getProperty(propertyKey, "")
 }
-
-
-
 
 val openAiApiKey = getApiKey("openai_api_key")
 
@@ -81,6 +79,8 @@ dependencies {
     implementation ("com.google.code.gson:gson:2.10.1")
     implementation("androidx.compose.material:material:1.7.3")
     implementation("androidx.navigation:navigation-compose:2.8.2")
+    implementation("androidx.test.services:storage:1.5.0")
+    implementation("androidx.room:room-common:2.6.1")
 
 
     testImplementation("junit:junit:4.13.2")
@@ -108,4 +108,3 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
 
 }
-

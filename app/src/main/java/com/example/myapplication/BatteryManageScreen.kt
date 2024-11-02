@@ -1,4 +1,3 @@
-import androidx.annotation.Nullable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -6,8 +5,11 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.myapplication.ShowAlertDialog
+import com.example.myapplication.createNotification
 import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.ui.theme.Colors
 import com.example.myapplication.network.RetrofitInstance
@@ -22,6 +24,8 @@ fun BatteryManageScreen(
     val coroutineScope = rememberCoroutineScope()
     var temperatureData by remember { mutableStateOf<TempResponse?>(null) }
     var isRequestFailed by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false)} // 다이얼로그 상태 관리
+    val context = LocalContext.current // 알림 표시 context
 
     Scaffold(
         backgroundColor = Colors.Background,
@@ -74,6 +78,11 @@ fun BatteryManageScreen(
                             isRequestFailed = false
                             val request = TempRequest(car_device_number = "674마5387")
                             temperatureData = RetrofitInstance.api.temperature(request)
+                            // 배터리 온도가 45도 이상일 때 상태표시줄 알림과 화면 알림 표시
+                            if ((temperatureData?.module_temp ?: 0f) >= 45) {
+                                showDialog = true;
+                                createNotification(context)
+                            }
                         } catch (e: Exception) {
                             e.printStackTrace()
                             isRequestFailed = true
@@ -99,4 +108,5 @@ fun BatteryManageScreen(
             }
         }
     )
+    ShowAlertDialog(showDialog = showDialog, onDismiss = {showDialog = false}) // 화면 UI 알림 표시
 }

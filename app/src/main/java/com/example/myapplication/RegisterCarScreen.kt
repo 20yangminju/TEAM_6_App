@@ -211,6 +211,7 @@ fun RegisterCarScreen(context: Context, done : () -> Unit, onNavigateToPre: () -
                     contentColor = Colors.ButtonText
                 ),
                 onClick = {
+                    done()
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(8.dp),//버튼 모양 설정
