@@ -8,7 +8,7 @@ data class RegisterRequest(val nickname: String, val email: String, val password
 data class TempResponse(val car_device_number: String, val module_number: Int,
                         val module_temp: Float, val created_at: String)
 
-data class TempRequest(val car_device_number: String)
+data class TempRequest(val car_device_number: String, val module_number: Int)
 
 
 interface ApiService {

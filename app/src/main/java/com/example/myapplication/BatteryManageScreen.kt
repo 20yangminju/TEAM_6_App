@@ -76,7 +76,7 @@ fun BatteryManageScreen(
                     coroutineScope.launch {
                         try {
                             isRequestFailed = false
-                            val request = TempRequest(car_device_number = "674마5387")
+                            val request = TempRequest(car_device_number = "674마5387", 1)
                             temperatureData = RetrofitInstance.api.temperature(request)
                             // 배터리 온도가 45도 이상일 때 상태표시줄 알림과 화면 알림 표시
                             if ((temperatureData?.module_temp ?: 0f) >= 45) {

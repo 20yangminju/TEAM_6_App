@@ -15,11 +15,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.myapplication.createNotification
 import com.example.myapplication.navigation.BottomNavigationBar
+import com.example.myapplication.network.RetrofitInstance
 import com.example.myapplication.ui.theme.Colors
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -29,10 +32,59 @@ fun BatteryTemperatureScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToNotifications: () -> Unit
 ) {
+
+    val coroutineScope = rememberCoroutineScope()
+    var isRequestFailed by remember { mutableStateOf(false) }
+    var temperatureData1 by remember { mutableStateOf<TempResponse?>(null) }
+    var temperatureData2 by remember { mutableStateOf<TempResponse?>(null) }
+    var temperatureData3 by remember { mutableStateOf<TempResponse?>(null) }
+    var temperatureData4 by remember { mutableStateOf<TempResponse?>(null) }
+    var showDialog by remember { mutableStateOf(false)} // 다이얼로그 상태 관리
     val temperatureHistory = remember { mutableStateListOf("32°C", "33°C", "34°C") }
     var showAlert by remember { mutableStateOf(false) }
+    val context = LocalContext.current // 알림 표시 context
+
+    LaunchedEffect(Unit) {
+        try {
+            isRequestFailed = false
+            val request_1 = TempRequest(car_device_number = "674마5387", 1)
+            val request_2 = TempRequest(car_device_number = "674마5387", 2)
+            val request_3 = TempRequest(car_device_number = "674마5387", 3)
+            val request_4 = TempRequest(car_device_number = "674마5387", 4)
+            temperatureData1 = RetrofitInstance.api.temperature(request_1)
+            temperatureData2 = RetrofitInstance.api.temperature(request_2)
+            temperatureData3 = RetrofitInstance.api.temperature(request_3)
+            temperatureData4 = RetrofitInstance.api.temperature(request_4)
+
+            // 배터리 온도가 45도 이상일 때 상태표시줄 알림과 화면 알림 표시
+            if ((temperatureData1?.module_temp ?: 0f) >= 45F
+                || (temperatureData2?.module_temp ?: 0f) >= 45F
+                || (temperatureData3?.module_temp ?: 0f) >= 45F
+                || (temperatureData4?.module_temp ?: 0f) >= 35F) {
+                showDialog = true
+                createNotification(context)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            isRequestFailed = true
+            temperatureData1 = null
+            temperatureData2 = null
+            temperatureData3 = null
+            temperatureData4 = null
+        }
+    }
+
+
+
+
+
+
+
+
 
     Scaffold(
+
+
         backgroundColor = Colors.Background,
         topBar = {
             Column {
@@ -71,6 +123,7 @@ fun BatteryTemperatureScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Top
                 ) {
+
                     // 상단 텍스트 및 Divider
                     Text(
                         text = "배터리 온도 측정",
@@ -83,14 +136,15 @@ fun BatteryTemperatureScreen(
 
                     // 온도 모듈 버튼 그리드
                     Row(modifier = Modifier.fillMaxWidth()) {
-                        TemperatureButton("온도 모듈 1", "34°C", onClick = { showAlert = true }, modifier = Modifier.weight(1f))
-                        TemperatureButton("온도 모듈 2", "35°C", onClick = { showAlert = true }, modifier = Modifier.weight(1f))
+                        TemperatureButton("온도 모듈 1", temperatureData1?.module_temp.toString(), onClick = { showAlert = true }, modifier = Modifier.weight(1f))
+                        TemperatureButton("온도 모듈 2", temperatureData2?.module_temp.toString(), onClick = { showAlert = true }, modifier = Modifier.weight(1f))
                     }
                     Row(modifier = Modifier.fillMaxWidth()) {
-                        TemperatureButton("온도 모듈 3", "36°C", onClick = { showAlert = true }, modifier = Modifier.weight(1f))
-                        TemperatureButton("온도 모듈 4", "37°C", onClick = { showAlert = true }, modifier = Modifier.weight(1f))
+                        TemperatureButton("온도 모듈 3", temperatureData3?.module_temp.toString(), onClick = { showAlert = true }, modifier = Modifier.weight(1f))
+                        TemperatureButton("온도 모듈 4", temperatureData4?.module_temp.toString(), onClick = { showAlert = true }, modifier = Modifier.weight(1f))
                     }
                 }
+
 
                 // 알림창 구현
                 if (showAlert) {
@@ -111,6 +165,26 @@ fun BatteryTemperatureScreen(
                         },
                         text = {
                             TemperatureHistoryList(temperatureHistory)
+                        },
+                        confirmButton = {}
+                    )
+                }
+
+                if (showDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showDialog = false },
+                        title = {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(text = "이상 온도 발생", color = Color.Black, fontWeight = FontWeight.Bold)
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription =  "종료 버튼",
+                                    modifier = Modifier.clickable { showDialog = false }
+                                )
+                            }
                         },
                         confirmButton = {}
                     )
