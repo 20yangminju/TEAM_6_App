@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.myapplication.ShowTemperatureDialog
 import com.example.myapplication.createNotification
 import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.network.RetrofitInstance
@@ -74,17 +75,7 @@ fun BatteryTemperatureScreen(
         }
     }
 
-
-
-
-
-
-
-
-
     Scaffold(
-
-
         backgroundColor = Colors.Background,
         topBar = {
             Column {
@@ -145,7 +136,6 @@ fun BatteryTemperatureScreen(
                     }
                 }
 
-
                 // 알림창 구현
                 if (showAlert) {
                     AlertDialog(
@@ -169,26 +159,7 @@ fun BatteryTemperatureScreen(
                         confirmButton = {}
                     )
                 }
-
-                if (showDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showDialog = false },
-                        title = {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(text = "이상 온도 발생", color = Color.Black, fontWeight = FontWeight.Bold)
-                                Icon(
-                                    imageVector = Icons.Default.Clear,
-                                    contentDescription =  "종료 버튼",
-                                    modifier = Modifier.clickable { showDialog = false }
-                                )
-                            }
-                        },
-                        confirmButton = {}
-                    )
-                }
+                ShowTemperatureDialog(showDialog = showDialog, onDismiss = {showDialog = false}) // 화면 UI 알림 표시
             }
         }
     )

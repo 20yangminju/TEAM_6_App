@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.myapplication.ShowAlertDialog
 import com.example.myapplication.createNotification
 import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.ui.theme.Colors
@@ -108,5 +107,5 @@ fun BatteryManageScreen(
             }
         }
     )
-    ShowAlertDialog(showDialog = showDialog, onDismiss = {showDialog = false}) // 화면 UI 알림 표시
+    //ShowAlertDialog(showDialog = showDialog, onDismiss = {showDialog = false}) // 화면 UI 알림 표시
 }

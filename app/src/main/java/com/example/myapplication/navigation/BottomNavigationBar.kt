@@ -30,7 +30,7 @@ fun BottomNavigationBar(
 
     BottomNavigation(
         backgroundColor = Colors.TextField,
-        contentColor = Colors.Title,
+        contentColor = Colors.Button,
         modifier = Modifier.fillMaxWidth()
     ) {
         items.forEach { (title, icon) ->

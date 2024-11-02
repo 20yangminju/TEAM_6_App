@@ -9,7 +9,7 @@ object Colors {
     val Title = Color(0xFF0086CB)//앱 화면 타이틀 문구
     val Label = Color.White
     val Placeholder = Color.Gray //설명문구
-    val Button = Color(0xFF0095E3) //  버튼 색깔
+    val Button = Color(0xFF52BBFF) //  버튼 색깔
     val ButtonText = Color.White // 버튼 속 텍스트 색깔
     val Alert = Color.Red // 알림 색깔
     val Divider = Color.White
