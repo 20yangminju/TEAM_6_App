@@ -61,7 +61,7 @@ fun BatteryTemperatureScreen(
             if ((temperatureData1?.module_temp ?: 0f) >= 45F
                 || (temperatureData2?.module_temp ?: 0f) >= 45F
                 || (temperatureData3?.module_temp ?: 0f) >= 45F
-                || (temperatureData4?.module_temp ?: 0f) >= 35F) {
+                || (temperatureData4?.module_temp ?: 0f) >= 45F) {
                 showDialog = true
                 createNotification(context)
             }

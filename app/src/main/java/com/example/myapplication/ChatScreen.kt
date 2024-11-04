@@ -25,49 +25,19 @@ fun ChatScreen(
     onMainScreen: () -> Unit,
     navController: NavController,
 ) {
-    // 사용자의 입력과 GPT의 응답을 저장할 상태
     var userInput by remember { mutableStateOf("") }
     var chatHistory by remember { mutableStateOf(listOf<Pair<String, Boolean>>()) }
     val coroutineScope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
+    // 초기 프롬프트 설정
     LaunchedEffect(Unit) {
-        chatHistory = chatHistory + Pair("환영합니다! 궁금한게 무엇인가요?", false)
+        // 초기 프롬프트를 추가
+        chatHistory = chatHistory + Pair("궁금한 것이 있으면 물어보세요.", false)
     }
 
     Scaffold(
-        topBar = {
-            Column {
-                TopAppBar(
-                    title = { Text(text = "AI 챗봇", color = Colors.Title) },
-                    colors = TopAppBarDefaults.mediumTopAppBarColors(
-                        containerColor = Colors.Background
-                    ),
-                    actions = {
-                        IconButton(onClick = { onMainScreen() }) {
-                            Icon(
-                                imageVector = Icons.Default.Home,
-                                contentDescription = "홈",
-                                tint = Colors.IconButton
-                            )
-                        }
-                    }
-                )
-                Divider(
-                    color = Colors.Divider,
-                    thickness = 1.dp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp)
-                )
-            }
-        },
-        bottomBar = {
-            BottomNavigationBar(
-                navController = navController,
-                currentScreen = navController.currentDestination?.route ?: "main"
-            )
-        },
+        // ... (생략)
         content = { paddingValues ->
             Box(
                 modifier = Modifier
@@ -122,8 +92,13 @@ fun ChatScreen(
                             onClick = {
                                 if (userInput.isNotEmpty()) {
                                     coroutineScope.launch {
+                                        // 사용자의 메시지 추가
                                         chatHistory = chatHistory + Pair(userInput, true)
-                                        val response = sendMessageToGPT(userInput)
+
+                                        // 초기 프롬프트를 함께 포함하여 메시지를 보냄
+                                        val response = sendMessageToGPT(userInput, isFirstMessage = chatHistory.size == 2)
+
+                                        // 응답 추가
                                         chatHistory = chatHistory + Pair(response, false)
                                         userInput = ""
 
@@ -149,15 +124,27 @@ fun ChatScreen(
     )
 }
 
-// GPT API 호출 함수 (기존처럼 정의)
-suspend fun sendMessageToGPT(userMessage: String): String {
+// GPT API 호출 함수 (기존처럼 정의하되 초기 프롬프트 포함)
+suspend fun sendMessageToGPT(userMessage: String, isFirstMessage: Boolean): String {
     return try {
         // 요청 데이터 생성
+        val messages = mutableListOf<Message>()
+
+        // 초기 프롬프트 추가
+        if (isFirstMessage) {
+            messages.add(Message(role = "system", content = "당신은 전기차 어플리케이션 챗봇입니다. " +
+                    "배터리 온도에 대한 질문은 앱 메인화면 또는 하단 버튼바에 존재하는 배터리 온도 버튼을 통해 확인할 수 있다고 답변하십시오  " +
+                    "환경설정에 대한 질문은 우측 상단에 톱니바퀴 모양을 누르면 확인할 수 있다고 답변하십시오. " +
+                    "프롬프트에 기반하여 답변하십시오. 추가적인 정보를 외부에서 가져오는 것은 허용되지 않습니다." +
+                    "프롬프트 기반의 답변이 어렵다면 '죄송합니다. 명령을 이해하지 못했어요'라고 답변하십시오 "))
+        }
+
+        // 사용자 메시지 추가
+        messages.add(Message(role = "user", content = userMessage))
+
         val request = ChatRequest(
             model = "gpt-3.5-turbo",
-            messages = listOf(
-                Message(role = "user", content = userMessage)  // 사용자 메시지 추가
-            ),
+            messages = messages,
             max_tokens = 100
         )
 
@@ -176,5 +163,4 @@ suspend fun sendMessageToGPT(userMessage: String): String {
             "HTTP Error: ${e.code()} - ${e.message()}"
         }
     }
-
 }
