@@ -20,6 +20,7 @@ import com.example.myapplication.resource.LoadUserInfoScreen;
 import com.example.myapplication.SignUpScreen
 import com.example.myapplication.FirstScreen
 import com.example.myapplication.RegisterCarScreen
+import com.example.myapplication.resource.NotificationViewModel
 
 data class LoginData(
     var id: String = "null",
@@ -27,7 +28,8 @@ data class LoginData(
 )
 
 @Composable
-fun SetupNavGraph(navController: NavHostController) {
+fun SetupNavGraph(navController: NavHostController,
+                  notificationViewModel: NotificationViewModel) {
     val context = LocalContext.current
 
     NavHost(navController = navController, startDestination = "FirstScreen") {
@@ -63,11 +65,12 @@ fun SetupNavGraph(navController: NavHostController) {
                 onNavigateToNotifications = { navController.navigate("AlarmScreen") }
 
         ) }
-        composable("batteryTemperature") { BatteryTemperatureScreen(
-            navController = navController,
-            onNavigateToSettings = { navController.navigate("Setting") },
-            onNavigateToNotifications = { navController.navigate("AlarmScreen") }
-
+        composable("batteryTemperature") {
+            BatteryTemperatureScreen(
+                navController = navController,
+                onNavigateToSettings = { navController.navigate("Setting") },
+                onNavigateToNotifications = { navController.navigate("AlarmScreen") },
+                notificationViewModel = notificationViewModel
         ) }
         composable("cellBalance") { CellBalanceScreen(
             navController = navController,
@@ -77,12 +80,8 @@ fun SetupNavGraph(navController: NavHostController) {
         ) }
         composable("AlarmScreen") {
             AlarmScreen(
-                onNavigateToHome = {
-                    navController.navigate("main")
-                },
-                onBottomNavigationSelected = { selectedScreen ->
-                    navController.navigate(selectedScreen)
-                }
+                onNavigateToHome = { navController.navigate("main") },
+                viewModel = notificationViewModel
             )
         }
         composable("SignUp") {

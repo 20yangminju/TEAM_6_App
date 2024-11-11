@@ -80,7 +80,7 @@ fun BatteryManageScreen(
                             // 배터리 온도가 45도 이상일 때 상태표시줄 알림과 화면 알림 표시
                             if ((temperatureData?.module_temp ?: 0f) >= 45) {
                                 showDialog = true;
-                                createNotification(context)
+                                //createNotification(context)
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()

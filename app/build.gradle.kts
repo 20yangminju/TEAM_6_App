@@ -81,6 +81,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.8.2")
     implementation("androidx.test.services:storage:1.5.0")
     implementation("androidx.room:room-common:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
 
 
     testImplementation("junit:junit:4.13.2")
@@ -106,5 +107,7 @@ dependencies {
     // 기타 필요한 라이브러리
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+
+    
 
 }

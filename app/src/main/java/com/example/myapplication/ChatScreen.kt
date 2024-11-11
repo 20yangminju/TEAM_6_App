@@ -37,7 +37,38 @@ fun ChatScreen(
     }
 
     Scaffold(
-        // ... (생략)
+        topBar = {
+            Column {
+                TopAppBar(
+                    title = { Text(text = "AI 챗봇", color = Colors.Title) },
+                    colors = TopAppBarDefaults.mediumTopAppBarColors(
+                        containerColor = Colors.Background
+                    ),
+                    actions = {
+                        IconButton(onClick = { onMainScreen() }) {
+                            Icon(
+                                imageVector = Icons.Default.Home,
+                                contentDescription = "홈",
+                                tint = Colors.IconButton
+                            )
+                        }
+                    }
+                )
+                Divider(
+                    color = Colors.Divider,
+                    thickness = 1.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp)
+                )
+            }
+        },
+        bottomBar = {
+            BottomNavigationBar(
+                navController = navController,
+                currentScreen = navController.currentDestination?.route ?: "main"
+            )
+        },
         content = { paddingValues ->
             Box(
                 modifier = Modifier

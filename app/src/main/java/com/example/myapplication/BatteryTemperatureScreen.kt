@@ -24,6 +24,7 @@ import com.example.myapplication.ShowTemperatureDialog
 import com.example.myapplication.createNotification
 import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.network.RetrofitInstance
+import com.example.myapplication.resource.NotificationViewModel
 import com.example.myapplication.ui.theme.Colors
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -31,7 +32,8 @@ import com.example.myapplication.ui.theme.Colors
 fun BatteryTemperatureScreen(
     navController: NavController,
     onNavigateToSettings: () -> Unit,
-    onNavigateToNotifications: () -> Unit
+    onNavigateToNotifications: () -> Unit,
+    notificationViewModel: NotificationViewModel
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -63,7 +65,10 @@ fun BatteryTemperatureScreen(
                 || (temperatureData3?.module_temp ?: 0f) >= 45F
                 || (temperatureData4?.module_temp ?: 0f) >= 45F) {
                 showDialog = true
-                createNotification(context)
+                createNotification(
+                    context = context,
+                    viewModel = notificationViewModel // 알림 저장 
+                )
             }
         } catch (e: Exception) {
             e.printStackTrace()

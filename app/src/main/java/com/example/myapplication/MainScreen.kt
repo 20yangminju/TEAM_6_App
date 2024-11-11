@@ -1,6 +1,6 @@
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,6 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
@@ -17,11 +19,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.myapplication.R
 import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.ui.theme.Colors
 import java.time.LocalDate
@@ -37,15 +41,17 @@ fun MainScreen(
     onNavigateToNotifications: () -> Unit
 ) {
     // 권장 완속 충전 날짜 설정
-    val recommendedChargeDate = LocalDate.now().plusDays(30)
-    val MonthYearFormatter = DateTimeFormatter.ofPattern("yyyy M월", Locale.KOREAN)
-    val formattedMonthYear = recommendedChargeDate.format(MonthYearFormatter)
+    val recommendedChargeDate = LocalDate.now().plusDays(30) // 권장 완속 충전 날짜
+    val MonthYearFormatter = DateTimeFormatter.ofPattern("yyyy년 M월", Locale.KOREAN)
     val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val currentMonth = YearMonth.now()
-    val daysInMonth = currentMonth.lengthOfMonth()
-    val days = (1..daysInMonth).map { LocalDate.of(currentMonth.year, currentMonth.month, it) }
-    val weeks = days.chunked(7)
+    val today = LocalDate.now()
+
+    var displayedMonth by remember { mutableStateOf(YearMonth.now())}
+    val daysInMonth = displayedMonth.lengthOfMonth()
+    val daysInMonthList = (1..daysInMonth).map { LocalDate.of(displayedMonth.year, displayedMonth.month, it) }
+    val weeks = daysInMonthList.chunked(7)
     val daysOfWeek = listOf("월", "화", "수", "목", "금", "토", "일")
+    val formattedMonthYear = displayedMonth.format(MonthYearFormatter)
 
     // 주행 관련 변수 설정
     val batteryPercentage by remember { mutableStateOf(50) }
@@ -113,7 +119,7 @@ fun MainScreen(
                         Text(
                             text = "권장 완속 충전 날짜: ${recommendedChargeDate.format(dateFormatter)}",
                             color = Colors.Text,
-                            fontSize = 20.sp
+                            fontSize = 18.sp
                         )
                     }
                 }
@@ -147,7 +153,6 @@ fun MainScreen(
                                 )
                             }
                         }
-
                         // 현재 배터리 충전량 버튼
                         Box(
                             modifier = Modifier
@@ -213,53 +218,59 @@ fun MainScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Colors.Button, RoundedCornerShape(12.dp))
-                            .padding(16.dp),
-                        contentAlignment = Alignment.CenterStart
+                            .height(200.dp)
+                            .background(Color.Black),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = "총 주행 거리: $totalDistance",
-                            color = Colors.Text,
-                            fontSize = 20.sp
+                        Image(
+                            painter = painterResource(id = R.drawable.carimage),
+                            contentDescription = "차량 이미지",
+                            modifier = Modifier.size(300.dp)
                         )
-                    }
-                }
-                item {
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
-                item {
-                    // 총 주행 시간
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Colors.Button, RoundedCornerShape(12.dp))
-                            .padding(16.dp),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Text(
-                            text = "총 주행 시간: $totalTime",
-                            color = Colors.Text,
-                            fontSize = 20.sp
-                        )
-                    }
-                }
-                item {
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
-                item {
-                    // 연비
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Colors.Button, RoundedCornerShape(12.dp))
-                            .padding(16.dp),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Text(
-                            text = "연비: $fuelEfficiency",
-                            color = Colors.Text,
-                            fontSize = 20.sp
-                        )
+                        Column(
+                            modifier = Modifier
+                                .offset(x = (-100).dp, y = (-80).dp) // 위치 조정
+                                .background(Colors.Button, shape = RoundedCornerShape(8.dp))
+                                .padding(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "연비: $fuelEfficiency",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+                        // 총 주행 거리 표시
+                        Column(
+                            modifier = Modifier
+                                .offset(x = 0.dp, y = 90.dp) // 위치 조정
+                                .background(Colors.Button, shape = RoundedCornerShape(8.dp))
+                                .padding(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "총 주행 거리: $totalDistance",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+                        // 총 주행 시간 표시
+                        Column(
+                            modifier = Modifier
+                                .offset(x = 100.dp, y = (-80).dp) // 위치 조정
+                                .background(Colors.Button, shape = RoundedCornerShape(8.dp))
+                                .padding(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "총 주행 시간: $totalTime",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
                     }
                 }
                 item {
@@ -291,14 +302,37 @@ fun MainScreen(
                     }
                 }
                 item {
-                    Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = {
+                            displayedMonth = displayedMonth.minusMonths(1)
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "이전 달",
+                                tint = Colors.Button
+                            )
+                        }
                         Text(
                             text = formattedMonthYear,
                             color = Colors.Text,
                             fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(bottom = 8.dp)
+                            fontWeight = FontWeight.Bold
                         )
+                        IconButton(onClick = {
+                            displayedMonth = displayedMonth.plusMonths(1)
+                        }) {
+                            Icon(Icons.Default.ArrowForward, contentDescription = "다음 달", tint = Colors.Button)
+                        }
+                    }
+                }
+                item {
+                    Column(modifier = Modifier.fillMaxWidth()) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -321,26 +355,68 @@ fun MainScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 week.forEach { day ->
+                                    val isToday = day == today
                                     val isRecommendedDate = day == recommendedChargeDate
-                                    if (isRecommendedDate) {
-                                        Log.d("Calendar", "Recommended charge date matched: $day")
-                                    }
                                     Box(
                                         modifier = Modifier
                                             .padding(4.dp)
                                             .weight(1f)
                                             .background(
-                                                color = if (isRecommendedDate) Color.Red else Colors.Background,
+                                                color = when {
+                                                    isToday -> Colors.Button // 오늘 날짜는 버튼 색
+                                                    isRecommendedDate -> Color.Red // 권장 날짜는 빨간색
+                                                    else -> Colors.Background
+                                                },
                                                 shape = MaterialTheme.shapes.small
                                             )
                                             .aspectRatio(1f),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Text(
-                                            text = day.dayOfMonth.toString(),
-                                            color = if (isRecommendedDate) Color.Red else Colors.Text,
-                                            fontWeight = if (isRecommendedDate) FontWeight.Bold else FontWeight.Normal,
-                                        )
+                                        when {
+                                            isToday -> {
+                                                Column(
+                                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                                    verticalArrangement = Arrangement.Center
+                                                ) {
+                                                    Text(
+                                                        text = day.dayOfMonth.toString(),
+                                                        color = Color.White,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                    Text(
+                                                        text = "오늘 날짜",
+                                                        color = Color.White,
+                                                        fontSize = 10.sp,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                }
+                                            }
+                                            isRecommendedDate -> {
+                                                Column(
+                                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                                    verticalArrangement = Arrangement.Center
+                                                ) {
+                                                    Text(
+                                                        text = day.dayOfMonth.toString(),
+                                                        color = Color.White,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                    Text(
+                                                        text = "권장 날짜",
+                                                        color = Color.White,
+                                                        fontSize = 10.sp,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                }
+                                            }
+                                            else -> {
+                                                Text(
+                                                    text = day.dayOfMonth.toString(),
+                                                    color = Colors.Text,
+                                                    fontWeight = FontWeight.Normal
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                                 if (week.size < 7) {
@@ -352,9 +428,7 @@ fun MainScreen(
                         }
                     }
                 }
-                item {
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
+                item {Spacer(modifier = Modifier.height(20.dp))}
             }
         }
     )

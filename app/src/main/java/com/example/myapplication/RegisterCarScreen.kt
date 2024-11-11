@@ -29,7 +29,7 @@ fun RegisterCarScreen(context: Context, done : () -> Unit, onNavigateToPre: () -
     var owner by remember { mutableStateOf("") }
     var carNumber by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) } // DropdownMenu 상태
-    val carTypes = listOf("test1", "test2", "test3")//차종 리스트 예시
+    val carTypes = listOf("니로", "코나")//차종 리스트 예시
     var selectedCarType by remember { mutableStateOf("") }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     Box(

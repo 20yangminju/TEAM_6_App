@@ -23,6 +23,12 @@ import androidx.core.app.NotificationCompat
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.myapplication.resource.NotificationViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 // 화면에 뜨는 알림 UI
 @Composable
@@ -66,9 +72,10 @@ fun ShowTemperatureDialog(showDialog: Boolean, onDismiss: () -> Unit) {
 }
 
 // 조건에 맞춰 알림이 뜨도록 함(트리거) → 상태 표시줄에 적용
-fun createNotification(context: Context) {
+fun createNotification(context: Context, viewModel: NotificationViewModel) {
     val channelId = "channel_id"
     val channelName = "Default Channel"
+    val notificationText = "배터리 온도가 너무 높습니다."
     val notificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -86,10 +93,21 @@ fun createNotification(context: Context) {
     val notification = NotificationCompat.Builder(context, channelId)
         .setSmallIcon(R.drawable.ic_launcher_foreground) // 알림 앱 아이콘
         .setContentTitle("EV-PrepareCareFully") // 앱 이름 설정
-        .setContentText("배터리 온도가 너무 높습니다.") // 임시 텍스트
+        .setContentText(notificationText) // 임시 텍스트
         .setPriority(NotificationCompat.PRIORITY_HIGH) // 헤드업 알림이 뜨게끔 설정
         .setAutoCancel(true)
         .build()
 
     notificationManager.notify(notificationId, notification)
+
+    // 알림 내역 저장
+    val currentTimeMillis = System.currentTimeMillis()
+    val dateFormat = SimpleDateFormat("yyyy-MM-dd, HH:mm:ss", Locale.getDefault())
+    val formattedTime = dateFormat.format(currentTimeMillis)
+
+    viewModel.addNotification(
+        icon = R.drawable.baseline_warning_24,
+        title = notificationText,
+        date = formattedTime
+    )
 }
