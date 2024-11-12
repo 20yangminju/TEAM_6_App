@@ -6,11 +6,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
@@ -38,14 +41,13 @@ fun BatteryTemperatureScreen(
     onNavigateToNotifications: () -> Unit,
     notificationViewModel: NotificationViewModel
 ) {
-
     val coroutineScope = rememberCoroutineScope()
     var isRequestFailed by remember { mutableStateOf(false) }
     var temperatureData1 by remember { mutableStateOf<TempResponse?>(null) }
     var temperatureData2 by remember { mutableStateOf<TempResponse?>(null) }
     var temperatureData3 by remember { mutableStateOf<TempResponse?>(null) }
     var temperatureData4 by remember { mutableStateOf<TempResponse?>(null) }
-    var showDialog by remember { mutableStateOf(false)} // 다이얼로그 상태 관리
+    var showDialog by remember { mutableStateOf(false) }
     val temperatureHistory = remember { mutableStateListOf("32°C", "33°C", "34°C") }
     var showAlert by remember { mutableStateOf(false) }
     val context = LocalContext.current // 알림 표시 context
@@ -70,7 +72,7 @@ fun BatteryTemperatureScreen(
                 showDialog = true
                 createNotification(
                     context = context,
-                    viewModel = notificationViewModel // 알림 저장 
+                    viewModel = notificationViewModel // 알림 저장
                 )
             }
         } catch (e: Exception) {
@@ -133,15 +135,23 @@ fun BatteryTemperatureScreen(
                     Divider(color = Color.White, thickness = 2.dp, modifier = Modifier.padding(vertical = 16.dp))
                     Spacer(modifier = Modifier.height(30.dp))
 
-                    // 온도 모듈 버튼 그리드
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        TemperatureButton("온도 모듈 1", temperatureData1?.module_temp.toString(), onClick = { showAlert = true }, modifier = Modifier.weight(1f))
-                        TemperatureButton("온도 모듈 2", temperatureData2?.module_temp.toString(), onClick = { showAlert = true }, modifier = Modifier.weight(1f))
+                    // 온도 모듈 카드 그리드
+                    LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+                        items(4) { index ->
+                            TemperatureButton(
+                                title = "온도 모듈 ${index + 1}",
+                                temperature = when (index) {
+                                    0 -> temperatureData1?.module_temp?.toString() ?: "N/A"
+                                    1 -> temperatureData2?.module_temp?.toString() ?: "N/A"
+                                    2 -> temperatureData3?.module_temp?.toString() ?: "N/A"
+                                    else -> temperatureData4?.module_temp?.toString() ?: "N/A"
+                                },
+                                onClick = { showAlert = true }
+                            )
+                        }
                     }
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        TemperatureButton("온도 모듈 3", temperatureData3?.module_temp.toString(), onClick = { showAlert = true }, modifier = Modifier.weight(1f))
-                        TemperatureButton("온도 모듈 4", temperatureData4?.module_temp.toString(), onClick = { showAlert = true }, modifier = Modifier.weight(1f))
-                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
 
                 // 알림창 구현
@@ -156,7 +166,7 @@ fun BatteryTemperatureScreen(
                                 Text(text = "온도 기록", color = Color.Black, fontWeight = FontWeight.Bold)
                                 Icon(
                                     imageVector = Icons.Default.Clear,
-                                    contentDescription =  "종료 버튼",
+                                    contentDescription = "종료 버튼",
                                     modifier = Modifier.clickable { showAlert = false }
                                 )
                             }
@@ -167,7 +177,7 @@ fun BatteryTemperatureScreen(
                         confirmButton = {}
                     )
                 }
-                ShowTemperatureDialog(showDialog = showDialog, onDismiss = {showDialog = false}) // 화면 UI 알림 표시
+                ShowTemperatureDialog(showDialog = showDialog, onDismiss = { showDialog = false }) // 화면 UI 알림 표시
             }
         }
     )
@@ -182,47 +192,57 @@ fun TemperatureButton(
 ) {
     val tempValue = temperature.toFloatOrNull() ?: 0f
 
-    // 온도에 따라 아이콘과 색상 결정
-    val (icon, color) = when {
-        tempValue >= 50 -> Icons.Default.Warning to Color.Red
-        tempValue >=40.1 -> Icons.Default.Warning to Color(0xFFFF7F00)
-        tempValue in 20f..40f -> Icons.Default.CheckCircle to Color.Green
-        else -> Icons.Default.Warning to Color.Blue
+    // 온도 상태에 따라 아이콘 색상, 메시지 설정
+    val (icon, iconColor, statusMessage) = when {
+        tempValue >= 50 -> Triple(Icons.Default.Warning, Color.Red, "과열 경고")
+        tempValue >= 40 -> Triple(Icons.Default.Warning, Color(0xFFFFA726), "점검 필요")
+        tempValue in 20f..39f -> Triple(Icons.Default.CheckCircle, Color.Green, "안정적")
+        else -> Triple(Icons.Default.Info, Color.Blue, "온도 낮음")
     }
 
-    // 색상 애니메이션 적용
-    val animatedColor by animateColorAsState(color)
-
-    Box(
+    Card(
         modifier = modifier
-            .aspectRatio(1f)
+            .fillMaxWidth()
             .padding(8.dp)
-            .border(1.dp, Color.Black, shape = RoundedCornerShape(12.dp))
-            .background(Color.White, shape = RoundedCornerShape(12.dp))
             .clickable { onClick() },
-        contentAlignment = Alignment.Center
+        elevation = 8.dp,
+        shape = RoundedCornerShape(12.dp),
+        backgroundColor = Color.White
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = title, fontSize = 20.sp, color = Color.Black)
-            Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Text(
-                    text = temperature,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.Black
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = animatedColor,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = iconColor, // 아이콘 색상 설정
+                modifier = Modifier.size(40.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = title,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "$temperature°C",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.Black
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = statusMessage,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Gray
+            )
         }
     }
 }
+

@@ -6,11 +6,13 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,6 +30,9 @@ fun CellBalanceScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToNotifications: () -> Unit
 ) {
+    val cells = List(98) { index -> CellData(index + 1, getRandomVoltage()) }
+    val safePercentage = cells.count { it.voltageDeviation <= 20 }.toFloat() / cells.size * 100
+
     Scaffold(
         backgroundColor = Colors.Background,
         topBar = {
@@ -55,15 +60,17 @@ fun CellBalanceScreen(
                 Divider(color = Colors.Divider, thickness = 1.dp)
                 Spacer(modifier = Modifier.height(15.dp))
                 Text(
-                    text = "셀 밸런스 측정",
+                    text = "셀 밸런스 상태 진단",
                     fontSize = 30.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth() // 화면 너비 채우기 및 중앙 정렬
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(15.dp))
                 Divider(color = Color.White, thickness = 2.dp, modifier = Modifier.padding(horizontal = 16.dp))
+                Spacer(modifier = Modifier.height(30.dp))
+                CellBalanceStatus(safePercentage)
                 Spacer(modifier = Modifier.height(15.dp))
             }
         },
@@ -80,10 +87,54 @@ fun CellBalanceScreen(
                     .padding(innerPadding)
                     .padding(16.dp)
             ) {
-                CellGrid(cells = List(98) { index -> CellData(index + 1, getRandomVoltage()) })
+                CellGrid(cells = cells)
             }
         }
     )
+}
+
+@Composable
+fun CellBalanceStatus(safePercentage: Float) {
+    val (icon, message, color) = when {
+        safePercentage >= 70 -> {
+            Triple(
+                Icons.Default.CheckCircle,
+                "셀 밸런스가 안전하게 유지되고 있습니다!",
+                Color(0xFF4CAF50) // 초록색
+            )
+        }
+        safePercentage > 50 && safePercentage < 70 ->{
+            Triple(
+                Icons.Default.Info,
+                "셀 밸런스의 관리가 필요합니다.",
+                Color(0xFFFFC107) // 노란색
+            )
+        }
+        else -> {
+            Triple(
+                Icons.Default.Warning,
+                "셀 밸런싱 작업 진행이 시급합니다.",
+                Color(0xFFF44336) // 빨간색
+            )
+        }
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color.copy(alpha = 0.2f))
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(imageVector = icon, contentDescription = null, tint = color, modifier = Modifier.size(24.dp))
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = message,
+            color = color,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
 }
 
 @Composable
@@ -102,22 +153,25 @@ fun CellGrid(cells: List<CellData>) {
 fun CellBox(cell: CellData) {
     val showDialog = remember { mutableStateOf(false) }
     val voltageHistory = List(10) {
-        Pair((15..60).random(), "2024-11-08 12:${10 + it} PM") // 샘플 데이터
+        Pair((15..60).random(), "2024-11-08 12:${10 + it} PM")
     }
 
-    val backgroundColor = when {
-        cell.voltageDeviation <= 20 -> Color(0xFF87CEEB)
-        cell.voltageDeviation in 20..50 -> Color.Red
-        else -> Color.DarkGray
-    }
+    val isSafe = cell.voltageDeviation <= 20
+    val backgroundColor = if (isSafe) Color(0xFF87CEEB).copy(alpha = 0.8f) else Color.Red.copy(alpha = 0.8f)
+    val borderColor = if (isSafe) Color(0xFF87CEEB).copy(alpha = 0.8f) else Color.Red.copy(alpha = 0.8f)
+
+    val voltageOpacity = remember { mutableStateOf(0.9f) }
 
     Box(
         modifier = Modifier
             .size(48.dp)
             .background(backgroundColor)
-            .border(1.dp, Color.White)
+            .border(1.dp, borderColor)
             .padding(4.dp)
-            .clickable { showDialog.value = true }, // 클릭 시 알림창 열기
+            .clickable {
+                voltageOpacity.value = 1.0f
+                showDialog.value = true
+            },
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -127,26 +181,31 @@ fun CellBox(cell: CellData) {
         ) {
             Text(
                 text = "${cell.index}",
-                color = Colors.Text,
+                color = Colors.Text.copy(alpha = 0.8f),
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Light
             )
             Text(
                 text = "${cell.voltageDeviation}",
-                color = Colors.Text,
+                color = Colors.Text.copy(alpha = voltageOpacity.value),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
                 text = "mV",
-                color = Colors.Text,
+                color = Colors.Text.copy(alpha = 0.9f),
                 fontSize = 10.sp,
                 fontWeight = FontWeight.Light
             )
         }
     }
 
-    // 알림창 호출
+    LaunchedEffect(showDialog.value) {
+        if (!showDialog.value) {
+            voltageOpacity.value = 0.9f
+        }
+    }
+
     CellVoltageHistoryDialog(
         showDialog = showDialog.value,
         onDismiss = { showDialog.value = false },
@@ -154,10 +213,14 @@ fun CellBox(cell: CellData) {
     )
 }
 
-
 data class CellData(val index: Int, val voltageDeviation: Int)
 
-// 샘플 데이터를 위해 임의의 전압 편차 값을 생성하는 함수
 fun getRandomVoltage(): Int {
-    return (15..60).random()
+    val randomValue = (1..100).random() // 1~100 사이의 랜덤 값 생성
+    return when {
+        randomValue <= 70 -> (15..20).random() // 70% 확률로 정상 범위 값(15~20)
+        randomValue <= 90 -> (21..50).random() // 20% 확률로 경고 범위 값(21~50)
+        else -> (51..60).random() // 10% 확률로 위험 범위 값(51~60)
+    }
 }
+
