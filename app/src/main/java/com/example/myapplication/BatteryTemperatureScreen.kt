@@ -1,6 +1,7 @@
 // BatteryTemperatureScreen.kt
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -8,9 +9,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -171,7 +174,25 @@ fun BatteryTemperatureScreen(
 }
 
 @Composable
-fun TemperatureButton(title: String, temperature: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun TemperatureButton(
+    title: String,
+    temperature: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val tempValue = temperature.toFloatOrNull() ?: 0f
+
+    // 온도에 따라 아이콘과 색상 결정
+    val (icon, color) = when {
+        tempValue >= 50 -> Icons.Default.Warning to Color.Red
+        tempValue >=40.1 -> Icons.Default.Warning to Color(0xFFFF7F00)
+        tempValue in 20f..40f -> Icons.Default.CheckCircle to Color.Green
+        else -> Icons.Default.Warning to Color.Blue
+    }
+
+    // 색상 애니메이션 적용
+    val animatedColor by animateColorAsState(color)
+
     Box(
         modifier = modifier
             .aspectRatio(1f)
@@ -184,7 +205,24 @@ fun TemperatureButton(title: String, temperature: String, onClick: () -> Unit, m
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(text = title, fontSize = 20.sp, color = Color.Black)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = temperature, fontSize = 28.sp, fontWeight = FontWeight.ExtraBold, color = Color.Black)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = temperature,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = animatedColor,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
 }
