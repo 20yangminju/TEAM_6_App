@@ -1,11 +1,10 @@
 // NavGraph.kt
 package com.example.myapplication.navigation
 
-import BatteryManageScreen
 import BatteryTemperatureScreen
 import CarModeScreen
 import CellBalanceScreen
-import ChatScreen
+import com.example.myapplication.ChatBot.ChatScreen
 import LoginScreen
 import MainScreen
 import SettingsScreen

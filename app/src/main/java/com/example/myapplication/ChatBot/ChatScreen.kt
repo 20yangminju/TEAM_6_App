@@ -1,3 +1,14 @@
+package com.example.myapplication.ChatBot
+
+import ChatRequest
+import Message
+import RetrofitInstance
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,7 +22,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.resource.ChatBubble
@@ -30,8 +43,46 @@ fun ChatScreen(
     val coroutineScope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
+    var currentLocation by remember { mutableStateOf<Location?>(null) }
+    val context = LocalContext.current
+
+    var hasLocationPermission by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    val launcher = rememberLauncherForActivityResult(
+        contract =  ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        hasLocationPermission = isGranted
+        if(isGranted){
+            Toast.makeText(context, "위치 권한이 허용되었습니다.", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "위치 권한이 거부되었습니다", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
     // 초기 프롬프트 설정
     LaunchedEffect(Unit) {
+
+        if (!hasLocationPermission){
+            launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        } else {
+            getCurrentLocation(context) {
+                location -> var currentLocation: Location? = location
+                println("현재 위치 : $currentLocation ")
+            }
+        }
+
+        getCurrentLocation(context) {
+            location -> currentLocation = location
+            println("현재 위치 : $currentLocation")
+        }
         // 초기 프롬프트를 추가
         chatHistory = chatHistory + Pair("궁금한 것이 있으면 물어보세요.", false)
     }
@@ -163,11 +214,15 @@ suspend fun sendMessageToGPT(userMessage: String, isFirstMessage: Boolean): Stri
 
         // 초기 프롬프트 추가
         if (isFirstMessage) {
-            messages.add(Message(role = "system", content = "당신은 전기차 어플리케이션 챗봇입니다. " +
-                    "배터리 온도에 대한 질문은 앱 메인화면 또는 하단 버튼바에 존재하는 배터리 온도 버튼을 통해 확인할 수 있다고 답변하십시오  " +
-                    "환경설정에 대한 질문은 우측 상단에 톱니바퀴 모양을 누르면 확인할 수 있다고 답변하십시오. " +
-                    "프롬프트에 기반하여 답변하십시오. 추가적인 정보를 외부에서 가져오는 것은 허용되지 않습니다." +
-                    "프롬프트 기반의 답변이 어렵다면 '죄송합니다. 명령을 이해하지 못했어요'라고 답변하십시오 "))
+            messages.add(
+                Message(
+                    role = "system", content = "당신은 전기차 어플리케이션 챗봇입니다. " +
+                            "배터리 온도에 대한 질문은 앱 메인화면 또는 하단 버튼바에 존재하는 배터리 온도 버튼을 통해 확인할 수 있다고 답변하십시오  " +
+                            "환경설정에 대한 질문은 우측 상단에 톱니바퀴 모양을 누르면 확인할 수 있다고 답변하십시오. " +
+                            "프롬프트에 기반하여 답변하십시오. 추가적인 정보를 외부에서 가져오는 것은 허용되지 않습니다." +
+                            "프롬프트 기반의 답변이 어렵다면 '죄송합니다. 명령을 이해하지 못했어요'라고 답변하십시오 "
+                )
+            )
         }
 
         // 사용자 메시지 추가

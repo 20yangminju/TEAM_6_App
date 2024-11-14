@@ -9,8 +9,6 @@ data class TempResponse(val car_device_number: String, val module_number: Int,
                         val module_temp: Float, val created_at: String)
 
 data class TempRequest(val car_device_number: String, val module_number: Int)
-
-
 interface ApiService {
     @POST("/cars/batteryTemp/app")
     suspend fun temperature(@Body tempRequest: TempRequest): TempResponse
@@ -20,6 +18,4 @@ interface ApiService {
 
     @POST("/register")
     fun register(@Body registerRequest: RegisterRequest): Call<Void>  // 회원가입 요청
-
-
 }

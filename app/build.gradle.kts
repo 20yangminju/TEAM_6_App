@@ -107,7 +107,9 @@ dependencies {
     // 기타 필요한 라이브러리
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
 
-    
+
+
 
 }
