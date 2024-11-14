@@ -32,6 +32,8 @@ import com.example.myapplication.ui.theme.Colors
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
@@ -82,8 +84,10 @@ fun ChatScreen(
         getCurrentLocation(context) {
             location -> currentLocation = location
             println("현재 위치 : $currentLocation")
+            chatHistory = chatHistory + Pair("사용자의 현재 위치는 ${currentLocation?.latitude}, ${currentLocation?.longitude} 입니다 ", true)
         }
         // 초기 프롬프트를 추가
+
         chatHistory = chatHistory + Pair("궁금한 것이 있으면 물어보세요.", false)
     }
 
