@@ -19,6 +19,9 @@ object Colors {
     var ChatGPTBox = Color(0xFF00C6DC)
     var MyBox = Color(0xFFFFEB3B)
     val CarBox = Color(0xFF5DC19B)
+    val ChatField = Color(0xC4EAEAEA)
+    val BarChart = Color(0xFFB3EEEA)
+    val BarChartBackground = Color(0xFF8490C4)
 }
 
 val Purple80 = Color(0xFFD0BCFF)

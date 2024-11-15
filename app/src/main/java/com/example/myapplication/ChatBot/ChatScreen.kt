@@ -22,6 +22,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -37,7 +40,6 @@ import retrofit2.HttpException
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
-    onMainScreen: () -> Unit,
     navController: NavController,
 ) {
     var userInput by remember { mutableStateOf("") }
@@ -98,16 +100,7 @@ fun ChatScreen(
                     title = { Text(text = "AI 챗봇", color = Colors.Title) },
                     colors = TopAppBarDefaults.mediumTopAppBarColors(
                         containerColor = Colors.Background
-                    ),
-                    actions = {
-                        IconButton(onClick = { onMainScreen() }) {
-                            Icon(
-                                imageVector = Icons.Default.Home,
-                                contentDescription = "홈",
-                                tint = Colors.IconButton
-                            )
-                        }
-                    }
+                    )
                 )
                 Divider(
                     color = Colors.Divider,
@@ -153,7 +146,8 @@ fun ChatScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp),
+                            .padding(8.dp)
+                            .background(Color.White, RoundedCornerShape(12.dp)),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         TextField(
@@ -161,15 +155,13 @@ fun ChatScreen(
                             onValueChange = { userInput = it },
                             modifier = Modifier
                                 .weight(1f)
-                                .background(Colors.TextField, RoundedCornerShape(12.dp))
-                                .padding(4.dp)
-                                .shadow(4.dp, RoundedCornerShape(12.dp)),
+                                .padding(12.dp),
                             label = { Text("챗봇에게 메세지 보내기", color = Colors.Placeholder) },
                             colors = TextFieldDefaults.textFieldColors(
-                                containerColor = Colors.TextField,
-                                focusedIndicatorColor = Colors.Placeholder,
-                                unfocusedIndicatorColor = Colors.Placeholder,
-                                textColor = Colors.Text
+                                containerColor = Colors.ChatField,
+                                focusedIndicatorColor = Colors.Text,
+                                unfocusedIndicatorColor = Colors.Text,
+                                textColor = Color.Black
                             ),
                             shape = RoundedCornerShape(8.dp)
                         )
@@ -196,7 +188,8 @@ fun ChatScreen(
                                     }
                                 }
                             },
-                            modifier = Modifier.height(48.dp)
+                            modifier = Modifier
+                                .height(48.dp)
                                 .padding(horizontal = 8.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Colors.Button),
                             shape = RoundedCornerShape(16.dp)
@@ -253,4 +246,10 @@ suspend fun sendMessageToGPT(userMessage: String, isFirstMessage: Boolean): Stri
             "HTTP Error: ${e.code()} - ${e.message()}"
         }
     }
+}
+
+@Preview(showBackground = true, name = "ChatScreen Preview")
+@Composable
+fun ChatScreenPreview() {
+    ChatScreen(navController = NavController(LocalContext.current))
 }

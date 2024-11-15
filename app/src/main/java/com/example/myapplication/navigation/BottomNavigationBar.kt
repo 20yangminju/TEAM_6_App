@@ -21,7 +21,7 @@ fun BottomNavigationBar(
 ) {
     val items = listOf(
         "챗봇" to R.drawable.baseline_chat_bubble_24,
-        "운전 모드" to R.drawable.baseline_electric_car_24,
+        "배터리 현황" to R.drawable.baseline_electric_car_24,
         "홈" to R.drawable.baseline_home_24,
         "배터리 온도" to R.drawable.baseline_battery_alert_24,
         "셀 밸런스" to R.drawable.baseline_grid_on_24
@@ -46,7 +46,7 @@ fun BottomNavigationBar(
                 onClick = {
                     when (title) {
                         "챗봇" -> navController.navigate("ChatScreen")
-                        "운전 모드" -> navController.navigate("operationMode")
+                        "배터리 현황" -> navController.navigate("BatteryChargeScreen")
                         "홈" -> navController.navigate("main")
                         "배터리 온도" -> navController.navigate("batteryTemperature")
                         "셀 밸런스" -> navController.navigate("cellBalance")

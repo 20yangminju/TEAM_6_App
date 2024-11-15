@@ -24,9 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.resource.NotificationViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -72,10 +69,17 @@ fun ShowTemperatureDialog(showDialog: Boolean, onDismiss: () -> Unit) {
 }
 
 // 조건에 맞춰 알림이 뜨도록 함(트리거) → 상태 표시줄에 적용
-fun createNotification(context: Context, viewModel: NotificationViewModel) {
+fun createNotification(context: Context, viewModel: NotificationViewModel, status: Int) {
     val channelId = "channel_id"
     val channelName = "Default Channel"
-    val notificationText = "배터리 온도가 너무 높습니다."
+    val notificationText = when {
+        // 각 경우마다 다른 알림 출력
+        status == 0 -> "배터리 온도가 너무 높습니다."
+        status == 1 -> "충전기가 분리되었습니다. 차량을 확인해주세요."
+        status == 2 -> "셀 밸런스가 틀어졌습니다. 완속 충전을 권장합니다."
+        //status == 3 && saveCount == -> "$saveCount " // n회 이상 충전 시 완속 충전 권장 알림
+        else -> ""
+    }
     val notificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
