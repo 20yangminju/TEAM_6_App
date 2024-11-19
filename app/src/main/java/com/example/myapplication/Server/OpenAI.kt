@@ -6,6 +6,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.GET
+import retrofit2.http.Query
+import retrofit2.Call
 
 // OpenAI API 인터페이스 정의
 
@@ -34,3 +37,29 @@ object RetrofitInstance {
             .create(OpenAIApi::class.java)
     }
 }
+
+data class PlacesResponse(
+    val results: List<Place>
+)
+
+data class Place(
+    val name: String,
+    val vicinity: String
+)
+
+interface GooglePlacesApi {
+    @GET("nearbysearch/json")
+    fun getNearbyPlaces(
+        @Query("location") location: String,
+        @Query("radius") radius: Int,
+        @Query("type") type: String,
+        @Query("key") apiKey: String
+    ): Call<PlacesResponse>
+}
+
+val GpsRetrofit = Retrofit.Builder()
+    .baseUrl("https://maps.googleapis.com/maps/api/place/")
+    .addConverterFactory(GsonConverterFactory.create())
+    .build()
+
+val gps = GpsRetrofit.create(GooglePlacesApi::class.java)

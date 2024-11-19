@@ -2,7 +2,7 @@
 data class ChatRequest(
     val model: String = "gpt-3.5-turbo",  // 사용할 GPT 모델
     val messages: List<Message>,  // 메시지 리스트
-    val max_tokens: Int = 10000  // 최대 토큰 수
+    val max_tokens: Int = 1000  // 최대 토큰 수
 )
 
 // 메시지 데이터 클래스

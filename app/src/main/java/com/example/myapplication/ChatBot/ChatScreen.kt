@@ -2,6 +2,7 @@ package com.example.myapplication.ChatBot
 
 import ChatRequest
 import Message
+import Place
 import RetrofitInstance
 import android.Manifest
 import android.content.pm.PackageManager
@@ -15,17 +16,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
@@ -35,7 +32,7 @@ import com.example.myapplication.ui.theme.Colors
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
-
+var firstMessage = true
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,8 +43,13 @@ fun ChatScreen(
     var chatHistory by remember { mutableStateOf(listOf<Pair<String, Boolean>>()) }
     val coroutineScope = rememberCoroutineScope()
     val listState = rememberLazyListState()
-
     var currentLocation by remember { mutableStateOf<Location?>(null) }
+    val repairShops = remember { mutableStateOf<List<Place>>(emptyList()) }
+    val isLoading = remember { mutableStateOf(true ) }
+    val errorMessage = remember { mutableStateOf<String?>(null) }
+
+
+
     val context = LocalContext.current
 
     var hasLocationPermission by remember {
@@ -58,6 +60,8 @@ fun ChatScreen(
             == PackageManager.PERMISSION_GRANTED
         )
     }
+
+
 
     val launcher = rememberLauncherForActivityResult(
         contract =  ActivityResultContracts.RequestPermission()
@@ -71,24 +75,32 @@ fun ChatScreen(
     }
 
 
+
     // 초기 프롬프트 설정
     LaunchedEffect(Unit) {
 
         if (!hasLocationPermission){
             launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        } else {
-            getCurrentLocation(context) {
-                location -> var currentLocation: Location? = location
-                println("현재 위치 : $currentLocation ")
-            }
         }
 
         getCurrentLocation(context) {
             location -> currentLocation = location
-            println("현재 위치 : $currentLocation")
-            chatHistory = chatHistory + Pair("사용자의 현재 위치는 ${currentLocation?.latitude}, ${currentLocation?.longitude} 입니다 ", true)
+            fetchNearbyRepairShops(currentLocation!!.latitude,
+                currentLocation!!.longitude,
+                onResult = { places -> repairShops.value = places
+                isLoading.value =false
+
+                },
+                onError = { error ->
+                    errorMessage.value = error
+                    isLoading.value =false
+                })
+            println(currentLocation)
         }
-        // 초기 프롬프트를 추가
+
+
+
+
 
         chatHistory = chatHistory + Pair("궁금한 것이 있으면 물어보세요.", false)
     }
@@ -174,7 +186,7 @@ fun ChatScreen(
                                         chatHistory = chatHistory + Pair(userInput, true)
 
                                         // 초기 프롬프트를 함께 포함하여 메시지를 보냄
-                                        val response = sendMessageToGPT(userInput, isFirstMessage = chatHistory.size == 2)
+                                        val response = sendMessageToGPT(userInput,  repairShops.value)
 
                                         // 응답 추가
                                         chatHistory = chatHistory + Pair(response, false)
@@ -204,23 +216,32 @@ fun ChatScreen(
 }
 
 // GPT API 호출 함수 (기존처럼 정의하되 초기 프롬프트 포함)
-suspend fun sendMessageToGPT(userMessage: String, isFirstMessage: Boolean): String {
+suspend fun sendMessageToGPT(userMessage: String, nearShops: List<Place> ): String {
     return try {
         // 요청 데이터 생성
         val messages = mutableListOf<Message>()
 
-        // 초기 프롬프트 추가
-        if (isFirstMessage) {
+        val shopDetails = if (nearShops.isNotEmpty()){
+            nearShops.joinToString("\n") {"${it.name} : ${it.vicinity}"}
+        }
+        else {
+            "현재 주변에 정비소가 없습니다."
+        }
+
+        if(firstMessage){
             messages.add(
                 Message(
-                    role = "system", content = "당신은 전기차 어플리케이션 챗봇입니다. " +
-                            "배터리 온도에 대한 질문은 앱 메인화면 또는 하단 버튼바에 존재하는 배터리 온도 버튼을 통해 확인할 수 있다고 답변하십시오  " +
-                            "환경설정에 대한 질문은 우측 상단에 톱니바퀴 모양을 누르면 확인할 수 있다고 답변하십시오. " +
-                            "프롬프트에 기반하여 답변하십시오. 추가적인 정보를 외부에서 가져오는 것은 허용되지 않습니다." +
-                            "프롬프트 기반의 답변이 어렵다면 '죄송합니다. 명령을 이해하지 못했어요'라고 답변하십시오 "
+                    role = "system", content =
+                    "당신은 전기차 어플리케이션 전용 챗봇입니다." +
+                            "배터리 온도 관련 질문: '앱 메인 화면의 배터리 온도 버튼'에서 확인할 수 있다고 답변하십시오. " +
+                            "환경설정 관련 질문: '우측 상단 톱니바퀴 아이콘'을 통해 접근 가능하다고 안내하십시오. " +
+                            "정비소 관련 질문 : $shopDetails 을 그대로 출력하십시오 " +
+                            "답변이 어렵다면 '죄송합니다. 명령을 이해하지 못했어요.'라고 답변하십시오."
                 )
             )
+            firstMessage = false
         }
+
 
         // 사용자 메시지 추가
         messages.add(Message(role = "user", content = userMessage))
@@ -228,8 +249,12 @@ suspend fun sendMessageToGPT(userMessage: String, isFirstMessage: Boolean): Stri
         val request = ChatRequest(
             model = "gpt-3.5-turbo",
             messages = messages,
-            max_tokens = 100
+            max_tokens = 1000
         )
+
+
+
+
 
         // API 호출 및 응답 받기
         val response = RetrofitInstance.api.sendMessage(request)
@@ -247,6 +272,7 @@ suspend fun sendMessageToGPT(userMessage: String, isFirstMessage: Boolean): Stri
         }
     }
 }
+
 
 @Preview(showBackground = true, name = "ChatScreen Preview")
 @Composable

@@ -14,6 +14,7 @@ fun Project.getApiKey(propertyKey: String) : String {
 }
 
 val openAiApiKey = getApiKey("openai_api_key")
+val mapApiKey = getApiKey("map_api_key")
 
 android {
     namespace = "com.example.myapplication"
@@ -26,6 +27,7 @@ android {
         versionCode = 1
         versionName = "1.0"
         buildConfigField("String", "OPENAI_API_KEY", "\"$openAiApiKey\"")
+        buildConfigField("String", "GPS_API_KEY", "\"$mapApiKey\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
