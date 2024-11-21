@@ -1,7 +1,6 @@
 package com.example.myapplication
 
 import android.os.Build
-import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,14 +27,11 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
@@ -57,14 +52,18 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.resource.BatteryBarChart
+import com.example.myapplication.resource.CalendarApp
+import com.example.myapplication.resource.LabelledBox
 import com.example.myapplication.ui.theme.Colors
 import kotlinx.coroutines.delay
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Locale
 
+// 배터리 현황 페이지
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BatteryChargeScreen(navController: NavController,
@@ -85,18 +84,15 @@ fun BatteryChargeScreen(navController: NavController,
         "23:00" to 40,
         "24:00" to 20
     )
-    val recommendedChargeDate = LocalDate.now().plusDays(30) // 권장 완속 충전 날짜 → 추후 수정 필요
-    val lastChargeDate = LocalDate.now() // 마지막 충전 날짜 → 추후 수정 필요
-    val MonthYearFormatter = DateTimeFormatter.ofPattern("yyyy년 M월", Locale.KOREAN)
-    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val today = LocalDate.now()
+    val recommendedChargeDate = Calendar.getInstance().apply {
+        add(Calendar.DAY_OF_YEAR, 30) // 30일 뒤의 날짜로 설정
+    }
 
-    var displayedMonth by remember { mutableStateOf(YearMonth.now()) }
-    val daysInMonth = displayedMonth.lengthOfMonth()
-    val daysInMonthList = (1..daysInMonth).map { LocalDate.of(displayedMonth.year, displayedMonth.month, it) }
-    val weeks = daysInMonthList.chunked(7)
-    val daysOfWeek = listOf("월", "화", "수", "목", "금", "토", "일")
-    val formattedMonthYear = displayedMonth.format(MonthYearFormatter)
+    val lastChargeDate = LocalDate.now() // 마지막 충전 날짜 → 추후 수정 필요
+    val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val recommendedChargeDateText = dateFormatter.format(recommendedChargeDate.time)
+    val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    val lastChargeDateText = lastChargeDate.format(dateTimeFormatter)
 
     val batteryPercentage by remember { mutableStateOf(10) } // → 추후 수정 필요
     var expanded by remember { mutableStateOf(false) }
@@ -104,7 +100,6 @@ fun BatteryChargeScreen(navController: NavController,
     var saveCount by remember { mutableStateOf(0) }
 
     val batteryHistory = remember { mutableStateListOf<Pair<String, Int>>() }
-    val dateTimeFormatter = DateTimeFormatter.ofPattern("HH")
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -114,10 +109,11 @@ fun BatteryChargeScreen(navController: NavController,
 
             // 최근 24시간의 데이터만 유지
             if(batteryHistory.size > 24) {
-                batteryHistory.removeFirst()
+                batteryHistory.removeFirst() // 가장 오래된 기록 삭제
             }
         }
     }
+
 
     Scaffold(
         backgroundColor = Colors.Background,
@@ -177,7 +173,7 @@ fun BatteryChargeScreen(navController: NavController,
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "권장 완속 충전 날짜: ${recommendedChargeDate.format(dateFormatter)}",
+                            text = "권장 완속 충전 날짜: $recommendedChargeDateText",
                             color = Colors.Text,
                             fontSize = 18.sp
                         )
@@ -192,7 +188,11 @@ fun BatteryChargeScreen(navController: NavController,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(150.dp)
-                            .border(width = 2.dp, color = Colors.Text, shape = RoundedCornerShape(8.dp)) // 테두리 추가
+                            .border(
+                                width = 2.dp,
+                                color = Colors.Text,
+                                shape = RoundedCornerShape(8.dp)
+                            ) // 테두리 추가
                             .padding(16.dp),
                         horizontalArrangement = Arrangement.Center, // 좌우 정렬
                         verticalAlignment = Alignment.CenterVertically // 수직 가운데 정렬
@@ -269,7 +269,7 @@ fun BatteryChargeScreen(navController: NavController,
                 item {
                     // 마지막 충전 날짜 정보
                     Text(
-                        text = "마지막 충전 날짜: ${lastChargeDate.format(dateFormatter)}",
+                        text = "마지막 충전 날짜: $lastChargeDateText",
                         color = Colors.Text,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
@@ -289,9 +289,9 @@ fun BatteryChargeScreen(navController: NavController,
                 item {
                     Spacer(modifier = Modifier.height(10.dp))
                 }
-                item{
+                item {
                     BatteryBarChart(data = sampleData) // 테스트용
-                    //BatteryBarChart(batteryHistory)
+                    //BatteryBarChart(batteryHistory) // 실제 데이터 출력
                 }
                 // 완속 충전 스케줄링 캘린더
                 item {
@@ -344,11 +344,11 @@ fun BatteryChargeScreen(navController: NavController,
                         }
                     }
                 }
-                item{
-                    Spacer(modifier =  Modifier.height(10.dp))
+                item {
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
                 item {
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 8.dp)
@@ -357,138 +357,23 @@ fun BatteryChargeScreen(navController: NavController,
                             text = "• 한 달에 한 번 이상 100% 완속 충전으로\n  배터리 성능 저하를 예방할 수 있습니다.",
                             color = Colors.Text,
                             fontSize = 16.sp,
-                            modifier = Modifier.weight(1f)
+                            lineHeight = 20.sp
                         )
-                    }
-                }
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(onClick = {
-                            displayedMonth = displayedMonth.minusMonths(1)
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "이전 달",
-                                tint = Colors.Button
-                            )
-                        }
-                        Text(
-                            text = formattedMonthYear,
-                            color = Colors.Text,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        IconButton(onClick = {
-                            displayedMonth = displayedMonth.plusMonths(1)
-                        }) {
-                            Icon(Icons.Default.ArrowForward, contentDescription = "다음 달", tint = Colors.Button)
-                        }
-                    }
-                }
-                item {
-                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Spacer(modifier = Modifier.height(8.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            daysOfWeek.forEach{ dayOfWeek ->
-                                Text(
-                                    text = dayOfWeek,
-                                    color = Colors.Text,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    modifier = Modifier.weight(1f),
-                                    textAlign = TextAlign.Center
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
-                        weeks.forEach { week ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                week.forEach { day ->
-                                    val isToday = day == today
-                                    val isRecommendedDate = day == recommendedChargeDate
-                                    Box(
-                                        modifier = Modifier
-                                            .padding(4.dp)
-                                            .weight(1f)
-                                            .background(
-                                                color = when {
-                                                    isToday -> Colors.Button // 오늘 날짜는 버튼 색
-                                                    isRecommendedDate -> Color.Red // 권장 날짜는 빨간색
-                                                    else -> Colors.Background
-                                                },
-                                                shape = MaterialTheme.shapes.small
-                                            )
-                                            .aspectRatio(1f),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        when {
-                                            isToday -> {
-                                                Column(
-                                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                                    verticalArrangement = Arrangement.Center
-                                                ) {
-                                                    Text(
-                                                        text = day.dayOfMonth.toString(),
-                                                        color = Color.White,
-                                                        fontWeight = FontWeight.Bold
-                                                    )
-                                                    Text(
-                                                        text = "오늘 날짜",
-                                                        color = Color.White,
-                                                        fontSize = 10.sp,
-                                                        fontWeight = FontWeight.Bold
-                                                    )
-                                                }
-                                            }
-                                            isRecommendedDate -> {
-                                                Column(
-                                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                                    verticalArrangement = Arrangement.Center
-                                                ) {
-                                                    Text(
-                                                        text = day.dayOfMonth.toString(),
-                                                        color = Color.White,
-                                                        fontWeight = FontWeight.Bold
-                                                    )
-                                                    Text(
-                                                        text = "권장 날짜",
-                                                        color = Color.White,
-                                                        fontSize = 10.sp,
-                                                        fontWeight = FontWeight.Bold
-                                                    )
-                                                }
-                                            }
-                                            else -> {
-                                                Text(
-                                                    text = day.dayOfMonth.toString(),
-                                                    color = Colors.Text,
-                                                    fontWeight = FontWeight.Normal
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                                if (week.size < 7) {
-                                    repeat(7 - week.size) {
-                                        Spacer(modifier = Modifier.weight(1f))
-                                    }
-                                }
-                            }
+                            LabelledBox(text = "오늘 날짜", backgroundColor = Colors.Button)
+                            LabelledBox(text = "권장 날짜", backgroundColor = Color.Red)
+                            LabelledBox(text = "과거 충전 날짜", backgroundColor = Color.Yellow)
                         }
                     }
                 }
-                item {Spacer(modifier = Modifier.height(20.dp))}
+                item {
+                    CalendarApp(recommendedChargeDate = recommendedChargeDate)
+                }
             }
         }
     )

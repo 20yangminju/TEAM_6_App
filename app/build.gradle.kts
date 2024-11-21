@@ -69,6 +69,7 @@ android {
 }
 
 dependencies {
+    implementation("com.airbnb.android:lottie-compose:6.0.0")
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
@@ -110,8 +111,6 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation ("com.google.android.gms:play-services-location:21.0.1")
-
-
 
 
 }

@@ -120,31 +120,31 @@ fun DeviceRegistration(context: Context, done : () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Box { // 툴팁 부분은 추후에 수정할 예정입니다..
-                    Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = "도움말",
-                        tint = Colors.IconButton,
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickable {
-                                showToolTip = !showToolTip
-                            }
-                    )
-                    if (showToolTip) {
-                        Box(
-                            modifier = Modifier
-                                .background(Color.Gray, RoundedCornerShape(8.dp))
-                                .padding(8.dp)
-                                .align(Alignment.TopEnd)
-                        ) {
-                            Text(
-                                "장치 고유 번호는 장치 뒷면에서 확인가능합니다.",
-                                color = Colors.Text,
-                                fontSize = 14.sp
-                            )
-                        }
-                    }
+//                Box { // 툴팁 부분은 추후에 수정할 예정입니다..
+//                    Icon(
+//                        imageVector = Icons.Default.Info,
+//                        contentDescription = "도움말",
+//                        tint = Colors.IconButton,
+//                        modifier = Modifier
+//                            .size(24.dp)
+//                            .clickable {
+//                                showToolTip = !showToolTip
+//                            }
+//                    )
+//                    if (showToolTip) {
+//                        Box(
+//                            modifier = Modifier
+//                                .background(Color.Gray, RoundedCornerShape(8.dp))
+//                                .padding(8.dp)
+//                                .align(Alignment.TopEnd)
+//                        ) {
+//                            Text(
+//                                "장치 고유 번호는 장치 뒷면에서 확인가능합니다.",
+//                                color = Colors.Text,
+//                                fontSize = 14.sp
+//                            )
+//                        }
+//                    }
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
@@ -178,7 +178,7 @@ fun DeviceRegistration(context: Context, done : () -> Unit) {
             }
         }
     }
-}
+
 // 편한 디자인을 위한 Preview
 @Preview(showBackground = true)
 @Composable
