@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
@@ -101,7 +100,7 @@ fun BatteryChargeScreen(navController: NavController,
     var saveCount by remember { mutableStateOf(0) }
     var showTooltip by remember { mutableStateOf(false) }
 
-    val batteryHistory = remember { mutableStateListOf<Pair<String, Int>>() }
+    val batteryHistory = remember { mutableStateListOf<Pair<String, Int>>() } // → 추후 수정 필요
 
     LaunchedEffect(Unit) {
         while (true) {
@@ -115,8 +114,6 @@ fun BatteryChargeScreen(navController: NavController,
             }
         }
     }
-
-
     Scaffold(
         backgroundColor = Colors.Background,
         topBar = {
@@ -300,8 +297,8 @@ fun BatteryChargeScreen(navController: NavController,
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 8.dp, end = 16.dp), // 좌우 여백 추가
-                        verticalAlignment = Alignment.CenterVertically, // 수직 가운데 정렬
+                            .padding(start = 8.dp, end = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
@@ -391,7 +388,7 @@ fun BatteryChargeScreen(navController: NavController,
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.7f)) // 화면 덮는 반투명 배경
+                        .background(Color.Black.copy(alpha = 0.7f))
                         .padding(32.dp)
                 ) {
                     Column(
@@ -420,12 +417,12 @@ fun BatteryChargeScreen(navController: NavController,
                         Spacer(modifier = Modifier.height(16.dp))
                         OutlinedButton(
                             onClick = { showTooltip = false },
-                            border = BorderStroke(1.dp, Color(0xFF0080FF)), // 테두리 색상
+                            border = BorderStroke(1.dp, Color(0xFF0080FF)),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(
                                 text = "닫기",
-                                color = Color(0xFF0080FF), // 버튼 텍스트 색상
+                                color = Color(0xFF0080FF),
                                 fontSize = 16.sp
                             )
                         }

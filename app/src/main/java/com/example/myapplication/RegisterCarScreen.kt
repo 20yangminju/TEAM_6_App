@@ -194,7 +194,6 @@ fun RegisterCarScreen(context: Context, done : () -> Unit, onNavigateToPre: () -
                 value = carNumber,
                 onValueChange = { carNumber = it },
                 placeholder = { Text("차량 번호를 입력해주세요.", color = Colors.Placeholder) },
-                visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.textFieldColors(
                     textColor = Colors.Text,

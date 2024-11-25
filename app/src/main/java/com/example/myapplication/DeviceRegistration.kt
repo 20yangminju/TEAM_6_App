@@ -26,6 +26,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -42,6 +46,7 @@ import com.example.myapplication.ui.theme.Colors
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeviceRegistration(navController: NavHostController, context: Context, done: () -> Unit) {
+    var deviceId by remember { mutableStateOf("") }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -51,7 +56,7 @@ fun DeviceRegistration(navController: NavHostController, context: Context, done:
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            verticalArrangement = Arrangement.Top // 상단 정렬
+            verticalArrangement = Arrangement.Top
         ) {
             Row(
                 modifier = Modifier
@@ -114,8 +119,8 @@ fun DeviceRegistration(navController: NavHostController, context: Context, done:
                 Spacer(modifier = Modifier.height(10.dp))
 
                 TextField(
-                    value = "",
-                    onValueChange = {},
+                    value = deviceId,
+                    onValueChange = {deviceId = it},
                     label = {
                         Text("장치의 고유 번호를 입력해주세요.", color = Colors.Placeholder)
                     },
@@ -123,7 +128,8 @@ fun DeviceRegistration(navController: NavHostController, context: Context, done:
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Colors.TextField,
                         focusedIndicatorColor = Colors.Placeholder,
-                        unfocusedIndicatorColor = Colors.Placeholder
+                        unfocusedIndicatorColor = Colors.Placeholder,
+                        textColor = Colors.Text
                     ),
                     shape = RoundedCornerShape(8.dp)
                 )
