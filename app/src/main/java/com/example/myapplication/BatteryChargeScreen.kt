@@ -32,6 +32,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
@@ -98,6 +99,7 @@ fun BatteryChargeScreen(navController: NavController,
     var expanded by remember { mutableStateOf(false) }
     var selectedCount by remember { mutableStateOf(1) }
     var saveCount by remember { mutableStateOf(0) }
+    var showTooltip by remember { mutableStateOf(false) }
 
     val batteryHistory = remember { mutableStateListOf<Pair<String, Int>>() }
 
@@ -308,10 +310,20 @@ fun BatteryChargeScreen(navController: NavController,
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold
                         )
-                        Box(
-                            modifier = Modifier
-                                .wrapContentSize(Alignment.TopStart)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
+                            IconButton(
+                                onClick = { showTooltip = !showTooltip },
+                                modifier = Modifier
+                                    .padding(end = 8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Info,
+                                    contentDescription = "툴팁 아이콘",
+                                    tint = Colors.Text
+                                )
+                            }
                             OutlinedButton(
                                 onClick = { expanded = true },
                                 border = BorderStroke(1.dp, Colors.Button),
@@ -373,6 +385,51 @@ fun BatteryChargeScreen(navController: NavController,
                 }
                 item {
                     CalendarApp(recommendedChargeDate = recommendedChargeDate)
+                }
+            }
+            if (showTooltip) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.7f)) // 화면 덮는 반투명 배경
+                        .padding(32.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .background(Color(0xFF1E1E1E), RoundedCornerShape(16.dp))
+                            .padding(24.dp)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = "알림 아이콘",
+                                tint = Color.White,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "$selectedCount 회 이상 충전시 완속충전 권장 알림을 보내드릴게요!",
+                                color = Colors.Text,
+                                fontSize = 14.sp
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        OutlinedButton(
+                            onClick = { showTooltip = false },
+                            border = BorderStroke(1.dp, Color(0xFF0080FF)), // 테두리 색상
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "닫기",
+                                color = Color(0xFF0080FF), // 버튼 텍스트 색상
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
                 }
             }
         }
