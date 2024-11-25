@@ -1,19 +1,20 @@
 // BatteryTemperatureScreen.kt
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.myapplication.NearbyStationsDialog
 import com.example.myapplication.ShowTemperatureDialog
 import com.example.myapplication.createNotification
 import com.example.myapplication.navigation.BottomNavigationBar
@@ -47,7 +49,17 @@ fun BatteryTemperatureScreen(
     var showDialog by remember { mutableStateOf(false) }
     val temperatureHistory = remember { mutableStateListOf("32°C", "33°C", "34°C") }
     var showAlert by remember { mutableStateOf(false) }
-    val context = LocalContext.current // 알림 표시 context
+    val context = LocalContext.current
+
+    // 추가된 요구사항 상태 관리
+    var currentLocation by remember { mutableStateOf("서울시 강남구") }
+    var nearestStation by remember { mutableStateOf("테스트 충전소 1") }
+    var showStationDialog by remember { mutableStateOf(false) }
+    val stationList = listOf(
+        "테스트 충전소 1 - 서울시 강남구 - 1.2km",
+        "테스트 충전소 2 - 서울시 서초구 - 2.3km",
+        "테스트 충전소 3 - 서울시 송파구 - 3.5km"
+    )
 
     LaunchedEffect(Unit) {
         try {
@@ -61,7 +73,6 @@ fun BatteryTemperatureScreen(
             temperatureData3 = RetrofitInstance.api.temperature(request_3)
             temperatureData4 = RetrofitInstance.api.temperature(request_4)
 
-            // 배터리 온도가 45도 이상일 때 상태표시줄 알림과 화면 알림 표시
             if ((temperatureData1?.module_temp ?: 0f) >= 45F
                 || (temperatureData2?.module_temp ?: 0f) >= 45F
                 || (temperatureData3?.module_temp ?: 0f) >= 45F
@@ -69,17 +80,13 @@ fun BatteryTemperatureScreen(
                 showDialog = true
                 createNotification(
                     context = context,
-                    viewModel = notificationViewModel, // 알림 저장
+                    viewModel = notificationViewModel,
                     status = 0
                 )
             }
         } catch (e: Exception) {
             e.printStackTrace()
             isRequestFailed = true
-            temperatureData1 = null
-            temperatureData2 = null
-            temperatureData3 = null
-            temperatureData4 = null
         }
     }
 
@@ -109,31 +116,29 @@ fun BatteryTemperatureScreen(
             )
         },
         content = { innerPadding ->
-            Box(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                contentAlignment = Alignment.TopCenter
+                verticalArrangement = Arrangement.spacedBy(16.dp) // 각 항목 간격 설정
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Top
-                ) {
-
-                    // 상단 텍스트 및 Divider
+                item {
+                    Spacer(modifier = Modifier.height(10.dp))
                     Text(
                         text = "배터리 온도 측정",
-                        fontSize = 30.sp,
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        color = Colors.Title,
+                        modifier = Modifier.padding(16.dp)
                     )
-                    Divider(color = Color.White, thickness = 2.dp, modifier = Modifier.padding(vertical = 16.dp))
-                    Spacer(modifier = Modifier.height(30.dp))
-
-                    // 온도 모듈 카드 그리드
+                }
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(400.dp) // 고정 높이 설정
+                    )
+                    {
                     LazyVerticalGrid(columns = GridCells.Fixed(2)) {
                         items(4) { index ->
                             TemperatureButton(
@@ -148,38 +153,134 @@ fun BatteryTemperatureScreen(
                             )
                         }
                     }
+                    }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    if (showAlert) {
+                        AlertDialog(
+                            onDismissRequest = { showAlert = false },
+                            title = {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = "온도 기록",
+                                        color = Color.Black,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Default.Clear,
+                                        contentDescription = "종료 버튼",
+                                        modifier = Modifier.clickable { showAlert = false }
+                                    )
+                                }
+                            },
+                            text = {
+                                TemperatureHistoryList(temperatureHistory)
+                            },
+                            confirmButton = {}
+                        )
+                    }
+
+                    ShowTemperatureDialog(
+                        showDialog = showDialog,
+                        onDismiss = { showDialog = false })
                 }
-
-                // 알림창 구현
-                if (showAlert) {
-                    AlertDialog(
-                        onDismissRequest = { showAlert = false },
-                        title = {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text(text = "온도 기록", color = Color.Black, fontWeight = FontWeight.Bold)
-                                Icon(
-                                    imageVector = Icons.Default.Clear,
-                                    contentDescription = "종료 버튼",
-                                    modifier = Modifier.clickable { showAlert = false }
-                                )
-                            }
-                        },
-                        text = {
-                            TemperatureHistoryList(temperatureHistory)
-                        },
-                        confirmButton = {}
+                item {
+                    Divider(color = Colors.Divider, thickness = 1.dp)
+                    Spacer(modifier = Modifier.height(10.dp))
+                    // 충전소 위치 텍스트
+                    Text(
+                        text = "충전소 위치",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Colors.Title,
+                        modifier = Modifier.padding(16.dp)
                     )
                 }
-                ShowTemperatureDialog(showDialog = showDialog, onDismiss = { showDialog = false }) // 화면 UI 알림 표시
+                item{
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 8.dp),
+
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn, // 아이콘 추가
+                        contentDescription = "현 위치 아이콘",
+                        tint = Colors.Text, // 아이콘 색상
+                        modifier = Modifier.size(24.dp) // 아이콘 크기
+                    )
+                    Text("현 위치: ",
+                        fontWeight = FontWeight.Bold, color = Colors.Text,
+                        modifier = Modifier.padding(start = 0.dp,end=5.dp)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .background(Color.LightGray)
+                            .padding(8.dp)
+                    ) {
+                        Text(text = currentLocation)
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 8.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search, // 아이콘 추가
+                        contentDescription = "현 위치 아이콘",
+                        tint = Colors.Text, // 아이콘 색상
+                        modifier = Modifier.size(24.dp) // 아이콘 크기
+                    )
+                    Text("가까운 충전소: ", fontWeight = FontWeight.Bold, color = Colors.Text,
+                        modifier = Modifier.padding(start = 0.dp,end=5.dp))
+                    Box(
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .background(Color.LightGray)
+                            .padding(8.dp)
+                            .clickable { showStationDialog = true }
+                    ) {
+                        Text(text = nearestStation)
+                    }
+                }
+
+                if (showStationDialog) {
+                    NearbyStationsDialog(
+                        stationList = stationList,
+                        onStationSelect = { selectedStation ->
+                            nearestStation = selectedStation
+                        },
+                        onDismiss = { showStationDialog = false }
+                    )
+                }}
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp)
+                            .background(Color.LightGray)
+                            .clickable {
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${nearestStation}")
+                                )
+                                context.startActivity(intent)
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("지도 표시 (클릭하여 길찾기)", color = Color.White)
+                    }
+                }
             }
         }
     )
 }
+
 
 @Composable
 fun TemperatureButton(

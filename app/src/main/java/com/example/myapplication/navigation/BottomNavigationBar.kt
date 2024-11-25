@@ -25,12 +25,10 @@ fun BottomNavigationBar(
         "홈" to R.drawable.baseline_home_24,
         "배터리 온도" to R.drawable.baseline_battery_alert_24,
         "셀 밸런스" to R.drawable.baseline_grid_on_24
-
     )
 
     BottomNavigation(
         backgroundColor = Colors.TextField,
-        contentColor = Colors.Button,
         modifier = Modifier.fillMaxWidth()
     ) {
         items.forEach { (title, icon) ->
@@ -43,6 +41,8 @@ fun BottomNavigationBar(
                 },
                 label = { Text(text = title, fontSize = 10.sp) },
                 selected = currentScreen == title,
+                selectedContentColor = Color.White, // 선택된 상태일 때 아이콘과 텍스트의 색상을 흰색으로 설정
+                unselectedContentColor = Colors.Placeholder, // 선택되지 않은 상태의 색상
                 onClick = {
                     when (title) {
                         "챗봇" -> navController.navigate("ChatScreen")
@@ -56,3 +56,4 @@ fun BottomNavigationBar(
         }
     }
 }
+
