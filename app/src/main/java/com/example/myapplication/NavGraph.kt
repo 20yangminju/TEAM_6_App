@@ -93,8 +93,9 @@ fun SetupNavGraph(navController: NavHostController,
         }
         composable("DeviceRegistration") {
             DeviceRegistration(
+                navController = navController,
                 context = context,
-                done = { navController.navigate("main") }
+                done = { navController.navigate("Login") }
             )
         }
         composable("RegisterCar") {

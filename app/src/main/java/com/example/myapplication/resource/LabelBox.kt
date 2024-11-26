@@ -34,7 +34,7 @@ fun LabelledBox(text: String, backgroundColor: Color) {
             text = text,
             fontSize = 12.sp,
             color = Colors.Text,
-            modifier = Modifier.padding(top = 4.dp) // 박스와 텍스트 간격
+            modifier = Modifier.padding(top = 4.dp)
         )
     }
 }

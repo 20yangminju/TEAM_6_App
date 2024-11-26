@@ -28,20 +28,20 @@ fun NearbyStationsDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                onStationSelect(station.split(" - ")[0])
+                                onStationSelect(station.split("-")[0])
                                 onDismiss()
                             }
                             .padding(8.dp)
                     ) {
                         Column {
-                            Text(text = station.split(" - ")[0], fontWeight = FontWeight.Bold)
+                            Text(text = station.split("-")[0], fontWeight = FontWeight.Bold)
                             Text(
-                                text = station.split(" - ")[1],
+                                text = station.split("-")[1],
                                 fontSize = 12.sp,
                                 color = androidx.compose.ui.graphics.Color.Gray
                             )
                             Text(
-                                text = station.split(" - ")[2],
+                                text = station.split("-")[2],
                                 fontSize = 12.sp,
                                 color = androidx.compose.ui.graphics.Color.Gray
                             )

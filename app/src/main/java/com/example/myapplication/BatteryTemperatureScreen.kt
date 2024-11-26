@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -56,9 +54,10 @@ fun BatteryTemperatureScreen(
     var nearestStation by remember { mutableStateOf("테스트 충전소 1") }
     var showStationDialog by remember { mutableStateOf(false) }
     val stationList = listOf(
-        "테스트 충전소 1 - 서울시 강남구 - 1.2km",
-        "테스트 충전소 2 - 서울시 서초구 - 2.3km",
-        "테스트 충전소 3 - 서울시 송파구 - 3.5km"
+        "테스트 충전소 1-서울시 강남구-1.2km",
+        "테스트 충전소 2-서울시 서초구-2.3km",
+        "테스트 충전소 3-서울시 송파구-3.5km",
+        "테스트 충전소 4-서울시 강남구-1.2km",
     )
 
     LaunchedEffect(Unit) {

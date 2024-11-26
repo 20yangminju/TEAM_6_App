@@ -378,16 +378,13 @@ fun MainScreen(
                     }
                 }
                 item {
-                    Spacer(modifier = Modifier.height(10.dp))
-                }
-                item {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 8.dp)
                     ) {
                         Text(
-                            text = "• 한 달에 한 번 이상 100% 완속 충전으로\n  배터리 성능 저하를 예방할 수 있습니다.",
+                            text = "•  한 달에 한 번 이상 100% 완속 충전으로 배터리 성능\n 저하를 예방할 수 있습니다.",
                             color = Colors.Text,
                             fontSize = 16.sp,
                             lineHeight = 20.sp

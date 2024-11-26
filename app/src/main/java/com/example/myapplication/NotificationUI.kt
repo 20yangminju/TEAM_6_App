@@ -77,7 +77,7 @@ fun createNotification(context: Context, viewModel: NotificationViewModel, statu
         status == 0 -> "배터리 온도가 너무 높습니다."
         status == 1 -> "충전기가 분리되었습니다. 차량을 확인해주세요."
         status == 2 -> "셀 밸런스가 틀어졌습니다. 완속 충전을 권장합니다."
-        //status == 3 && saveCount == -> "$saveCount " // n회 이상 충전 시 완속 충전 권장 알림
+        //status == 3 && saveCount >= selectedCount -> "충전을 $selectedCount 회 하셨습니다. 배터리 효율을 위해 완속 충전을 권장합니다." // n회 이상 충전 시 완속 충전 권장 알림
         else -> ""
     }
     val notificationManager =
@@ -95,7 +95,7 @@ fun createNotification(context: Context, viewModel: NotificationViewModel, statu
     val notificationId = 1
 
     val notification = NotificationCompat.Builder(context, channelId)
-        .setSmallIcon(R.drawable.ic_launcher_foreground) // 알림 앱 아이콘
+        .setSmallIcon(R.drawable.baseline_warning_24) // 알림 앱 아이콘
         .setContentTitle("EV-PrepareCareFully") // 앱 이름 설정
         .setContentText(notificationText) // 임시 텍스트
         .setPriority(NotificationCompat.PRIORITY_HIGH) // 헤드업 알림이 뜨게끔 설정
