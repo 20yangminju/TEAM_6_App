@@ -278,7 +278,7 @@ fun BatteryTemperatureScreen(
                         tint = Colors.Text, // 아이콘 색상
                         modifier = Modifier.size(24.dp) // 아이콘 크기
                     )
-                    Text("정비소 위치: ",
+                    Text("현재 위치: ",
                         fontWeight = FontWeight.Bold, color = Colors.Text,
                         modifier = Modifier.padding(start = 0.dp,end=5.dp)
                     )
@@ -302,7 +302,7 @@ fun BatteryTemperatureScreen(
                         tint = Colors.Text, // 아이콘 색상
                         modifier = Modifier.size(24.dp) // 아이콘 크기
                     )
-                    Text("현재 위치: ", fontWeight = FontWeight.Bold, color = Colors.Text,
+                    Text("가까운 충전소: ", fontWeight = FontWeight.Bold, color = Colors.Text,
                         modifier = Modifier.padding(start = 0.dp,end=5.dp))
                     Box(
                         modifier = Modifier
