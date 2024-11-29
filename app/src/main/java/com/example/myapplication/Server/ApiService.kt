@@ -26,6 +26,8 @@ interface ApiService {
 
     @POST("/find-charger")
     suspend fun find_charger(@Body chargeRequest: chargeRequest): chargeResponse
+
+
 }
 
 

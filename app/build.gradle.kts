@@ -115,4 +115,8 @@ dependencies {
     implementation ("com.google.android.gms:play-services-location:21.0.1")
 
 
+    //이미지 파일 표시용 coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+
 }
