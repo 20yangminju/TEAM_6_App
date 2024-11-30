@@ -58,18 +58,14 @@ fun CellBalanceScreen(
                     }
                 )
                 Divider(color = Colors.Divider, thickness = 1.dp)
-                Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = "셀 밸런스 상태 진단",
-                    fontSize = 30.sp,
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    color = Colors.Title,
+                    modifier = Modifier.padding(16.dp)
                 )
-                Spacer(modifier = Modifier.height(15.dp))
-                Divider(color = Color.White, thickness = 2.dp, modifier = Modifier.padding(horizontal = 16.dp))
-                Spacer(modifier = Modifier.height(30.dp))
                 CellBalanceStatus(safePercentage)
                 Spacer(modifier = Modifier.height(15.dp))
             }

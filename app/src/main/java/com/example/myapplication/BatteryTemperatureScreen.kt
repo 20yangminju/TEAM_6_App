@@ -265,57 +265,79 @@ fun BatteryTemperatureScreen(
                     )
                 }
                 item{
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 8.dp),
-
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.LocationOn, // 아이콘 추가
-                        contentDescription = "현 위치 아이콘",
-                        tint = Colors.Text, // 아이콘 색상
-                        modifier = Modifier.size(24.dp) // 아이콘 크기
-                    )
-                    Text("현재 위치: ",
-                        fontWeight = FontWeight.Bold, color = Colors.Text,
-                        modifier = Modifier.padding(start = 0.dp,end=5.dp)
-                    )
-                    Box(
+                    Row(
                         modifier = Modifier
-                            .background(Color.LightGray)
-                            .padding(8.dp)
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
                     ) {
-                        Text(text = currentLocation)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = "현 위치 아이콘",
+                                tint = Colors.Text,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Text(
+                                text = "현재 위치:",
+                                fontWeight = FontWeight.Bold,
+                                color = Colors.Text,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(Colors.Background, shape = RoundedCornerShape(8.dp))
+                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = currentLocation,
+                                color = Color.White
+                            )
+                        }
                     }
+
                     Spacer(modifier = Modifier.height(10.dp))
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp, vertical = 8.dp),
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Search, // 아이콘 추가
-                        contentDescription = "현 위치 아이콘",
-                        tint = Colors.Text, // 아이콘 색상
-                        modifier = Modifier.size(24.dp) // 아이콘 크기
-                    )
-                    Text("가까운 충전소: ", fontWeight = FontWeight.Bold, color = Colors.Text,
-                        modifier = Modifier.padding(start = 0.dp,end=5.dp))
-                    Box(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .background(Color.LightGray)
-                            .padding(8.dp)
-                            .clickable { showStationDialog = true }
-                    ) {
-                        Text(text = nearestStation)
-                    }
-                }
 
-                if (showStationDialog) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "가까운 충전소 아이콘",
+                                tint = Colors.Text,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Text(
+                                text = "가까운 충전소:",
+                                fontWeight = FontWeight.Bold,
+                                color = Colors.Text,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(Colors.Background, shape = RoundedCornerShape(8.dp))
+                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                                .clickable { showStationDialog = true }
+                        ) {
+                            Text(
+                                text = nearestStation,
+                                color = Color.White
+                            )
+                        }
+                    }
+
+
+                    if (showStationDialog) {
                     NearbyStationsDialog(
                         stationList = stationList,
                         onStationSelect = { selectedStation ->

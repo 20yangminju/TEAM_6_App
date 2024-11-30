@@ -74,9 +74,9 @@ fun AlarmScreen(
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Divider(color = Colors.Divider, thickness = 2.dp, modifier = Modifier.fillMaxWidth())
+            Divider(color = Colors.Divider, thickness = 1.dp, modifier = Modifier.fillMaxWidth())
 
-            LazyColumn(modifier = Modifier.padding(16.dp)) {
+            LazyColumn(modifier = Modifier.padding(8.dp)) {
                 items(notifications) { item ->
                     NotificationRow(item)
                     Divider(color = Color.Gray)

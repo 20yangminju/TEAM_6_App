@@ -21,6 +21,13 @@ import com.example.myapplication.SignUpScreen
 import com.example.myapplication.FirstScreen
 import com.example.myapplication.RegisterCarScreen
 import com.example.myapplication.resource.NotificationViewModel
+import com.example.myapplication.screens.FAQScreen
+import com.example.myapplication.screens.InquiryScreen
+import com.example.myapplication.screens.NoticeScreen
+import com.example.myapplication.screens.PrivacyPolicyScreen
+import com.example.myapplication.screens.TermsOfServiceScreen
+import com.example.myapplication.screens.UserInfoScreen
+import com.example.myapplication.screens.VersionInfoScreen
 
 data class LoginData(
     var id: String = "null",
@@ -71,7 +78,7 @@ fun SetupNavGraph(navController: NavHostController,
                 onNavigateToSettings = { navController.navigate("Setting") },
                 onNavigateToNotifications = { navController.navigate("AlarmScreen") },
                 notificationViewModel = notificationViewModel
-        ) }
+            ) }
         composable("cellBalance") { CellBalanceScreen(
             navController = navController,
             onNavigateToSettings = { navController.navigate("Setting") },
@@ -111,9 +118,53 @@ fun SetupNavGraph(navController: NavHostController,
                 },
                 onNavigateToPre = {
                     navController.popBackStack()
+                },
+                navigateToFAQ = { navController.navigate("FAQ") },
+                navigateToNotice = { navController.navigate("Notice")},
+                navigateToInquiry = { navController.navigate("Inquiry") },
+                navigateToUserInfo = { navController.navigate("UserInfo") },
+                navigateToVersionInfo = { navController.navigate("VersionInfo") },
+                navigateToTermsOfService = { navController.navigate("TermsOfService") },
+                navigateToPrivacyPolicy = { navController.navigate("PrivacyPolicy") },
+
+            )
+        }
+
+        composable("FAQ") {
+            FAQScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable("Notice") {
+            NoticeScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+        composable("Inquiry") {
+            InquiryScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onSubmitInquiry = { title, email, content ->
+                    // 문의사항 데이터 처리 로직
+                    println("문의 제목: $title")
+                    println("이메일: $email")
+                    println("문의 내용: $content")
                 }
             )
         }
+        composable("UserInfo") {
+            UserInfoScreen(navController = navController)
+        }
+        composable("VersionInfo") {
+            VersionInfoScreen(navController = navController)
+        }
+        composable("TermsOfService") {
+            TermsOfServiceScreen(navController = navController)
+        }
+        composable("PrivacyPolicy") {
+            PrivacyPolicyScreen(navController = navController)
+        }
+
+
         composable("ChatScreen") {
             ChatScreen(
                 navController = navController,
