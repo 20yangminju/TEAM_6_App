@@ -1,3 +1,4 @@
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -6,32 +7,47 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.myapplication.R
+import com.example.myapplication.createNotification
 import com.example.myapplication.navigation.BottomNavigationBar
+import com.example.myapplication.resource.NotificationViewModel
 import com.example.myapplication.ui.theme.Colors
 
 @Composable
 fun CellBalanceScreen(
     navController: NavController,
     onNavigateToSettings: () -> Unit,
-    onNavigateToNotifications: () -> Unit
+    onNavigateToNotifications: () -> Unit,
+    onNavigateAIscreen: () -> Unit,
+    notificationViewModel: NotificationViewModel
 ) {
     val cells = List(98) { index -> CellData(index + 1, getRandomVoltage()) }
     val safePercentage = cells.count { it.voltageDeviation <= 20 }.toFloat() / cells.size * 100
+    val context = LocalContext.current
+
+    // 셀 밸런스가 틀어졌을때 알림
+    LaunchedEffect(safePercentage) {
+        if(safePercentage < 50) {
+            createNotification(context, notificationViewModel, status = 2)
+        }
+    }
 
     Scaffold(
         backgroundColor = Colors.Background,
@@ -41,6 +57,14 @@ fun CellBalanceScreen(
                     title = { Text(text = "EV-PrepareCareFully", color = Colors.Title) },
                     backgroundColor = Colors.Background,
                     actions = {
+                        IconButton(onClick = { onNavigateAIscreen() }) {
+                            Image(
+                                painter = painterResource(id = R.drawable.baseline_assessment_24), // drawable 이미지 리소스
+                                contentDescription = "AI 분석",
+                                modifier = Modifier.size(24.dp), // 아이콘 크기 설정
+                                alignment = Alignment.Center
+                            )
+                        }
                         IconButton(onClick = { onNavigateToSettings() }) {
                             Icon(
                                 imageVector = Icons.Default.Settings,

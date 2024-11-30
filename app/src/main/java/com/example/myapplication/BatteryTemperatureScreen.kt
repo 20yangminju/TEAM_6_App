@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -24,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,6 +33,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.myapplication.ChatBot.getCurrentLocation
 import com.example.myapplication.NearbyStationsDialog
+import com.example.myapplication.R
 import com.example.myapplication.ShowTemperatureDialog
 import com.example.myapplication.createNotification
 import com.example.myapplication.navigation.BottomNavigationBar
@@ -48,6 +51,7 @@ fun BatteryTemperatureScreen(
     navController: NavController,
     onNavigateToSettings: () -> Unit,
     onNavigateToNotifications: () -> Unit,
+    onNavigateAIscreen: () -> Unit,
     notificationViewModel: NotificationViewModel
 ) {
     var isRequestFailed by remember { mutableStateOf(false) }
@@ -164,6 +168,14 @@ fun BatteryTemperatureScreen(
                     title = { Text(text = "EV-PrepareCareFully", color = Colors.Title) },
                     backgroundColor = Colors.Background,
                     actions = {
+                        IconButton(onClick = { onNavigateAIscreen() }) {
+                            Image(
+                                painter = painterResource(id = R.drawable.baseline_assessment_24), // drawable 이미지 리소스
+                                contentDescription = "AI 분석",
+                                modifier = Modifier.size(24.dp), // 아이콘 크기 설정
+                                alignment = Alignment.Center
+                            )
+                        }
                         IconButton(onClick = { onNavigateToSettings() }) {
                             Icon(imageVector = Icons.Default.Settings, contentDescription = "환경설정", tint = Colors.IconButton)
                         }

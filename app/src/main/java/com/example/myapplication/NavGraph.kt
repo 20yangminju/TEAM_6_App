@@ -21,6 +21,7 @@ import com.example.myapplication.SignUpScreen
 import com.example.myapplication.FirstScreen
 import com.example.myapplication.RegisterCarScreen
 import com.example.myapplication.resource.NotificationViewModel
+import com.example.myapplication.ui.theme.AIImageScreen
 
 data class LoginData(
     var id: String = "null",
@@ -56,26 +57,31 @@ fun SetupNavGraph(navController: NavHostController,
                 navController = navController,
                 onNavigateToSettings = { navController.navigate("Setting") },
                 onNavigateToNotifications = { navController.navigate("AlarmScreen")},
+                onNavigateAIscreen = { navController.navigate("AIScreen")},
                 notificationViewModel = notificationViewModel
             )
         }
         composable("BatteryChargeScreen") {
             BatteryChargeScreen(
                 navController = navController,
+                onNavigateAIscreen = { navController.navigate("AIScreen")},
                 onNavigateToSettings = { navController.navigate("Setting") },
                 onNavigateToNotifications = { navController.navigate("AlarmScreen") }
             ) }
         composable("batteryTemperature") {
             BatteryTemperatureScreen(
                 navController = navController,
+                onNavigateAIscreen = { navController.navigate("AIScreen")},
                 onNavigateToSettings = { navController.navigate("Setting") },
                 onNavigateToNotifications = { navController.navigate("AlarmScreen") },
                 notificationViewModel = notificationViewModel
         ) }
         composable("cellBalance") { CellBalanceScreen(
             navController = navController,
+            onNavigateAIscreen = { navController.navigate("AIScreen")},
             onNavigateToSettings = { navController.navigate("Setting") },
-            onNavigateToNotifications = { navController.navigate("AlarmScreen") }
+            onNavigateToNotifications = { navController.navigate("AlarmScreen") },
+            notificationViewModel = notificationViewModel
 
         ) }
         composable("AlarmScreen") {
@@ -118,6 +124,13 @@ fun SetupNavGraph(navController: NavHostController,
             ChatScreen(
                 navController = navController,
                 )
+        }
+        composable("AIScreen") {
+            AIImageScreen (
+                onNavigateToPre = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
