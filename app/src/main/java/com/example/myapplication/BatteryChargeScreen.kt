@@ -2,8 +2,8 @@ package com.example.myapplication
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +32,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
@@ -51,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.resource.BatteryBarChart
@@ -67,22 +69,13 @@ import java.util.Locale
 
 import coil.compose.rememberImagePainter
 
-
-@Composable
-fun UrlImageExample() {
-    Image(
-        painter = rememberImagePainter("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb4klPJ%2FbtqOjnmPgTa%2FPQnIKh2KFInfSUzeXd9N1K%2Fimg.jpg"),
-        contentDescription = "Test Image from URL",
-        modifier = Modifier.fillMaxWidth().height(200.dp),
-        contentScale = ContentScale.Crop
-    )
-}
 // 배터리 현황 페이지
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BatteryChargeScreen(navController: NavController,
                         onNavigateToSettings: () -> Unit,
-                        onNavigateToNotifications: () -> Unit
+                        onNavigateToNotifications: () -> Unit,
+                        onNavigateAIscreen: () -> Unit
 ) {
     // 그래프 테스트용
     val sampleData = listOf("12:00" to 80,
@@ -136,6 +129,14 @@ fun BatteryChargeScreen(navController: NavController,
                     title = { Text(text = "EV-PrepareCareFully", color = Colors.Title) },
                     backgroundColor = Colors.Background,
                     actions = {
+                        IconButton(onClick = { onNavigateAIscreen() }) {
+                            Image(
+                                painter = painterResource(id = R.drawable.baseline_assessment_24), // drawable 이미지 리소스
+                                contentDescription = "AI 분석",
+                                modifier = Modifier.size(24.dp), // 아이콘 크기 설정
+                                alignment = Alignment.Center
+                            )
+                        }
                         IconButton(onClick = { onNavigateToSettings() }) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
@@ -397,7 +398,6 @@ fun BatteryChargeScreen(navController: NavController,
                 item {
                     CalendarApp(recommendedChargeDate = recommendedChargeDate)
                     Spacer(modifier = Modifier.height(16.dp))
-                    UrlImageExample()
                 }
             }
             if (showTooltip) {

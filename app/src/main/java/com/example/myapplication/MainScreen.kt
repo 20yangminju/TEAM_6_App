@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
@@ -48,6 +49,7 @@ fun MainScreen(
     navController: NavController,
     onNavigateToSettings: () -> Unit,
     onNavigateToNotifications: () -> Unit,
+    onNavigateAIscreen: () -> Unit,
     notificationViewModel: NotificationViewModel
 ) {
     var currentModuleIndex by remember { mutableStateOf(0) }
@@ -102,6 +104,14 @@ fun MainScreen(
                     title = { Text(text = "EV-PrepareCareFully", color = Colors.Title) },
                     backgroundColor = Colors.Background,
                     actions = {
+                        IconButton(onClick = { onNavigateAIscreen() }) {
+                            Image(
+                                painter = painterResource(id = R.drawable.baseline_assessment_24), // drawable 이미지 리소스
+                                contentDescription = "AI 분석",
+                                modifier = Modifier.size(24.dp), // 아이콘 크기 설정
+                                alignment = Alignment.Center
+                            )
+                        }
                         IconButton(onClick = { onNavigateToSettings() }) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
