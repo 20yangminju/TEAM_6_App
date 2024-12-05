@@ -40,7 +40,7 @@ fun SetupNavGraph(navController: NavHostController,
                   notificationViewModel: NotificationViewModel) {
     val context = LocalContext.current
 
-    NavHost(navController = navController, startDestination = "FirstScreen") {
+    NavHost(navController = navController, startDestination = "main") {
         composable("FirstScreen") {
             FirstScreen(context, onNavigateToLogin = {
                 navController.navigate("Login")

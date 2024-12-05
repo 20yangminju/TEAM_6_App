@@ -35,7 +35,7 @@ import java.util.Locale
 
 // 화면에 뜨는 알림 UI
 @Composable
-fun ShowTemperatureDialog(showDialog: Boolean, onDismiss: () -> Unit) {
+fun ShowTemperatureDialog(showDialog: Boolean, onDismiss: () -> Unit, isToHot: Boolean) {
     var showHelpDialog by remember { mutableStateOf(false) } // 도움말 다이얼로그 상태
 
     if (showDialog) {
@@ -70,7 +70,7 @@ fun ShowTemperatureDialog(showDialog: Boolean, onDismiss: () -> Unit) {
             },
             text = {
                 Text(
-                    text = "배터리 과열이 감지되었습니다. 차량을 확인해주세요.",
+                    text = "배터리 이상온도가 감지되었습니다. 차량을 확인해주세요.",
                     style = MaterialTheme.typography.bodyMedium
                 )
             },
@@ -84,7 +84,7 @@ fun ShowTemperatureDialog(showDialog: Boolean, onDismiss: () -> Unit) {
     }
 
     // 도움말 다이얼로그
-    HelpDialog(showHelp = showHelpDialog, onDismiss = { showHelpDialog = false })
+    HelpDialog(showHelp = showHelpDialog, onDismiss = { showHelpDialog = false }, isToHot = isToHot)
 }
 
 
