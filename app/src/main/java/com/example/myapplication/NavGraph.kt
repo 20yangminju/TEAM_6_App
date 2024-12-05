@@ -150,13 +150,16 @@ fun SetupNavGraph(navController: NavHostController,
             InquiryScreen(
                 onNavigateBack = { navController.popBackStack() },
                 onSubmitInquiry = { title, email, content ->
-                    // 문의사항 데이터 처리 로직
+                    // onSubmitInquiry 로직 추가 또는 연결된 함수 호출
                     println("문의 제목: $title")
                     println("이메일: $email")
-                    println("문의 내용: $content")
+                    println("내용: $content")
                 }
             )
         }
+
+
+
         composable("UserInfo") {
             UserInfoScreen(navController = navController)
         }

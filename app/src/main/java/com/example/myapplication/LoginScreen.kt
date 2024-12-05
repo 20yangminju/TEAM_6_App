@@ -146,7 +146,7 @@ fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFi
                             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                                 if (response.isSuccessful) {
                                     Log.d("Login", "로그인 성공!")
-                                    //onLogin()
+                                    onLogin()
                                     onNavigateToMain()
                                 } else {
                                     Log.d("Login", "로그인 실패: ${response.code()}")
@@ -176,16 +176,6 @@ fun LoginScreen(context: Context, onLogin: () -> Unit, onSignUp: () -> Unit,onFi
                 ) {
                     Text(
                         "처음이신가요? 회원가입하기",
-                        color = Colors.Placeholder,
-                        textAlign = TextAlign.Center
-                    )
-                }
-                TextButton(
-                    onClick = {/*추후 구현해야하는 로직*/ },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        "아이디 또는 비밀번호 찾기",
                         color = Colors.Placeholder,
                         textAlign = TextAlign.Center
                     )

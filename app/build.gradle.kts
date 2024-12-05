@@ -118,5 +118,7 @@ dependencies {
     //이미지 파일 표시용 coil
     implementation("io.coil-kt:coil-compose:2.4.0")
 
+    implementation("com.sun.mail:javax.mail:1.6.2")
+
 
 }

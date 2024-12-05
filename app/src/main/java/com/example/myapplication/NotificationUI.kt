@@ -4,6 +4,7 @@ package com.example.myapplication
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,12 +13,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.core.app.NotificationCompat
 import androidx.compose.ui.Modifier
@@ -30,7 +36,9 @@ import java.util.Locale
 // 화면에 뜨는 알림 UI
 @Composable
 fun ShowTemperatureDialog(showDialog: Boolean, onDismiss: () -> Unit) {
-    if(showDialog) {
+    var showHelpDialog by remember { mutableStateOf(false) } // 도움말 다이얼로그 상태
+
+    if (showDialog) {
         AlertDialog(
             onDismissRequest = { onDismiss() },
             title = {
@@ -42,13 +50,21 @@ fun ShowTemperatureDialog(showDialog: Boolean, onDismiss: () -> Unit) {
                         imageVector = Icons.Default.Warning,
                         contentDescription = "경고 아이콘",
                         tint = Color.Black,
-                        modifier = Modifier.size(24.dp) // Adjust the size if needed
+                        modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = "이상 온도 발생",
                         style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.weight(1f) // Allows the text to take up available space
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = Icons.Default.Info, // 정보 아이콘 추가
+                        contentDescription = "도움말",
+                        tint = Color.Gray,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable { showHelpDialog = true } // 클릭 시 도움말 다이얼로그 표시
                     )
                 }
             },
@@ -59,14 +75,18 @@ fun ShowTemperatureDialog(showDialog: Boolean, onDismiss: () -> Unit) {
                 )
             },
             confirmButton = {
-                TextButton(onClick = {onDismiss()}) {
+                TextButton(onClick = { onDismiss() }) {
                     Text("닫기")
                 }
             },
             modifier = Modifier.fillMaxWidth().padding(16.dp)
         )
     }
+
+    // 도움말 다이얼로그
+    HelpDialog(showHelp = showHelpDialog, onDismiss = { showHelpDialog = false })
 }
+
 
 // 조건에 맞춰 알림이 뜨도록 함(트리거) → 상태 표시줄에 적용
 fun createNotification(context: Context, viewModel: NotificationViewModel, status: Int) {
