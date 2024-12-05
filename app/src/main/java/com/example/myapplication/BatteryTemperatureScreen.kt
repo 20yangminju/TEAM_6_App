@@ -60,7 +60,7 @@ fun BatteryTemperatureScreen(
     var temperatureData3 by remember { mutableStateOf<TempResponse?>(null) }
     var temperatureData4 by remember { mutableStateOf<TempResponse?>(null) }
     var chargerData by remember { mutableStateOf<chargeResponse?>(null) }
-    var showDialog by remember { mutableStateOf(true) }
+    var showDialog by remember { mutableStateOf(false) }
     val temperatureHistory = remember { mutableStateListOf("32°C", "33°C", "34°C") }
     var showAlert by remember { mutableStateOf(false) }
     val context = LocalContext.current
