@@ -4,6 +4,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -19,37 +21,43 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TemperatureHistoryList(temperatureHistory: List<String>) {
-    val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    val todayDate = LocalDate.now().format(dateFormatter)
-
     LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(temperatureHistory) { temp ->
-            Row(
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(4.dp),
+                elevation = 4.dp,
+                shape = RoundedCornerShape(8.dp)
             ) {
-                // 온도 텍스트는 왼쪽 정렬
-                Text(
-                    text = temp,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black,
-                    modifier = Modifier.weight(1f) // Row 내에서 남은 공간 차지
-                )
-                // 날짜 텍스트는 오른쪽 정렬
-                Text(
-                    text = todayDate,
-                    fontSize = 14.sp,
-                    color = Color.Gray,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    // 온도
+                    Text(
+                        text = temp.split("\n")[0], // "온도" 부분
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    // 날짜
+                    Text(
+                        text = temp.split("\n")[1], // "날짜" 부분
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
+                }
             }
-            Divider(color = Color.Black, thickness = 1.dp)
         }
     }
 }
