@@ -11,18 +11,14 @@ data class TempResponse(val device_number: String, val module_number: Int,
 data class TempRequest(val device_number: String, val module_number: Int)
 
 data class TempHistoryRequest(val device_number: String, val module_number: Int, val page: Int)
-data class TempHistoryResponse(val device_number: String, val module_number: Int,
-                        val module_temp: Float, val created_at: String)
-data class TempHistoryItem(
-    val device_number: String,
-    val module_number: Int,
-    val module_temp: Float,
-    val created_at: String
-)
+data class TempHistoryItem(val device_number: String, val module_number: Int, val module_temp: Float, val created_at: String)
 
 data class CellRequest(val device_number: String, val ten_num: Int)
 data class CellResponse(val cell_00: Int, val cell_01: Int, val cell_02: Int, val cell_03: Int, val cell_04: Int,
                         val cell_05: Int, val cell_06: Int, val cell_07: Int, val cell_08: Int, val cell_09: Int,)
+
+data class StatusRequest(val device_number: String)
+data class StatusResponse(val charging_percent: Int, val charching: Int, val Hour: Int, val Minit: Int)
 
 data class chargeRequest(val longitude: Float, val latitude: Float)
 data class chargeResponse(val name: String, val address: String, val latitude: Float, val longitude: Float)
@@ -38,6 +34,9 @@ interface ApiService {
 
     @POST("cars/cellVoltage/app")
     suspend fun cellvoltage(@Body CellRequest: CellRequest): CellResponse
+
+    @POST("cars/batteryStatus/app")
+    suspend fun status(@Body StatusRequest: StatusRequest): StatusResponse
 
     @POST("login")
     fun login(@Body loginRequest: LoginRequest): Call<Void>  // 서버로 로그인 요청

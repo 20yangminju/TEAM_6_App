@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Settings
@@ -62,12 +61,25 @@ fun MainScreen(
     val recommendedChargeDateText = dateFormatter.format(recommendedChargeDate.time) // 권장 완속 충전 날짜 → 추후 수정
 
     // 주행 관련 변수 설정
-    val batteryPercentage by remember { mutableStateOf(10) } // → 추후 수정
+    var batteryPercentage by remember { mutableStateOf(0) }
     val totalDistance by remember { mutableStateOf("1200 km") } // → 추후 수정
     val totalTime by remember { mutableStateOf("15:30:00") } // → 추후 수정
     val fuelEfficiency by remember { mutableStateOf("12.5 km/kWh") } // → 추후 수정
 
     LaunchedEffect(Unit) {
+        try {
+            // 배터리 상태 요청
+            val statusResponse: StatusResponse = withContext(Dispatchers.IO) {
+                RetrofitInstance.api.status(StatusRequest(device_number = "888777"))
+            }
+
+            // 배터리 충전 상태 업데이트
+            withContext(Dispatchers.Main) {
+                batteryPercentage = statusResponse.charging_percent // 서버에서 받아온 충전 퍼센트
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         try {
             val requests = listOf(
                 TempRequest(device_number = "888777", 1),
