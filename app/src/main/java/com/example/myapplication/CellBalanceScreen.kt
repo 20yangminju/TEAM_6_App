@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
@@ -20,15 +19,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.myapplication.R
 import com.example.myapplication.createNotification
 import com.example.myapplication.navigation.BottomNavigationBar
 import com.example.myapplication.resource.NotificationViewModel
 import com.example.myapplication.ui.theme.Colors
+
 
 @Composable
 fun CellBalanceScreen(
@@ -38,13 +38,19 @@ fun CellBalanceScreen(
     onNavigateAIscreen: () -> Unit,
     notificationViewModel: NotificationViewModel
 ) {
-    val cells = List(98) { index -> CellData(index + 1, getRandomVoltage()) }
+    val viewModel: CellBalanceViewModel = viewModel()
+
+    // 서버에서 데이터를 가져옴
+    LaunchedEffect(Unit) {
+        viewModel.fetchCellData("888777", 0..9)
+    }
+    val cells by viewModel.cells.collectAsState()
     val safePercentage = cells.count { it.voltageDeviation <= 20 }.toFloat() / cells.size * 100
     val context = LocalContext.current
 
-    // 셀 밸런스가 틀어졌을때 알림
+    // 셀 밸런스가 틀어졌을 때 알림
     LaunchedEffect(safePercentage) {
-        if(safePercentage < 50) {
+        if (safePercentage < 50) {
             createNotification(context, notificationViewModel, status = 2)
         }
     }
@@ -234,13 +240,3 @@ fun CellBox(cell: CellData) {
 }
 
 data class CellData(val index: Int, val voltageDeviation: Int)
-
-fun getRandomVoltage(): Int {
-    val randomValue = (1..100).random() // 1~100 사이의 랜덤 값 생성
-    return when {
-        randomValue <= 70 -> (15..20).random() // 70% 확률로 정상 범위 값(15~20)
-        randomValue <= 90 -> (21..50).random() // 20% 확률로 경고 범위 값(21~50)
-        else -> (51..60).random() // 10% 확률로 위험 범위 값(51~60)
-    }
-}
-

@@ -70,10 +70,10 @@ fun MainScreen(
     LaunchedEffect(Unit) {
         try {
             val requests = listOf(
-                TempRequest(car_device_number = "674마5387", 1),
-                TempRequest(car_device_number = "674마5387", 2),
-                TempRequest(car_device_number = "674마5387", 3),
-                TempRequest(car_device_number = "674마5387", 4)
+                TempRequest(device_number = "888777", 1),
+                TempRequest(device_number = "888777", 2),
+                TempRequest(device_number = "888777", 3),
+                TempRequest(device_number = "888777", 4)
             )
             temperatureData = withContext(Dispatchers.IO) {
                 requests.map { request ->

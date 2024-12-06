@@ -101,10 +101,10 @@ fun BatteryTemperatureScreen(
     LaunchedEffect(Unit) {
         try {
             isRequestFailed = false
-            val request_1 = TempRequest(car_device_number = "674마5387", 1)
-            val request_2 = TempRequest(car_device_number = "674마5387", 2)
-            val request_3 = TempRequest(car_device_number = "674마5387", 3)
-            val request_4 = TempRequest(car_device_number = "674마5387", 4)
+            val request_1 = TempRequest(device_number = "888777", 1)
+            val request_2 = TempRequest(device_number = "888777", 2)
+            val request_3 = TempRequest(device_number = "888777", 3)
+            val request_4 = TempRequest(device_number = "888777", 4)
             temperatureData1 = RetrofitInstance.api.temperature(request_1)
             temperatureData2 = RetrofitInstance.api.temperature(request_2)
             temperatureData3 = RetrofitInstance.api.temperature(request_3)
