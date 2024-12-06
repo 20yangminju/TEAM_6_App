@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.theme
+package com.example.myapplication
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,6 +20,11 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -30,9 +35,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import com.example.myapplication.Server.Retrofit
+import com.example.myapplication.Server.SOHRequest
+import com.example.myapplication.Server.SOHResponse
+import com.example.myapplication.ui.theme.Colors
+
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.compose.ui.R
+import okhttp3.ResponseBody
+import androidx.compose.ui.graphics.asImageBitmap
+
 
 @Composable
-fun UrlImageExample() {
+fun Image(bitmap: Bitmap?) {
     Box(
         modifier = Modifier
             .padding(16.dp)
@@ -48,14 +64,22 @@ fun UrlImageExample() {
             )
             .background(Color.DarkGray, shape = RoundedCornerShape(16.dp))
     ) {
-        Image(
-            painter = rememberImagePainter("https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fb4klPJ%2FbtqOjnmPgTa%2FPQnIKh2KFInfSUzeXd9N1K%2Fimg.jpg"),
-            contentDescription = "Test Image from URL",
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            contentScale = ContentScale.Crop
-        )
+        if (bitmap != null) {
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = "Analyzed Image",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(8.dp),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Text(
+                text = "이미지를 불러오는 중...",
+                color = Color.White,
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
     }
 }
 
@@ -64,6 +88,31 @@ fun UrlImageExample() {
 fun AIImageScreen(
     onNavigateToPre: () -> Unit
 ) {
+    var SOHResponse by remember { mutableStateOf<SOHResponse?>(null) }
+    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        try {
+            val SOHRequset = SOHRequest(device_number = "888777")
+            SOHResponse = Retrofit.api.SOH(SOHRequset)
+
+            SOHResponse?.let {
+                val imageResponse = Retrofit.api.Image(SOHRequset)
+                if(imageResponse.isSuccessful){
+                    imageResponse.body()?.let { responseBody ->
+                        bitmap = BitmapFactory.decodeStream(responseBody.byteStream())
+                    }
+                }
+            }
+        }
+        catch (e: Exception){
+            e.printStackTrace()
+        } finally {
+            isLoading = false
+        }
+
+    }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -95,6 +144,25 @@ fun AIImageScreen(
                         .align(Alignment.TopStart)
                         .padding(16.dp)
                 ) {
+                    if (isLoading){
+                        Text(
+                            text = "예측 중입니다.",
+                            color = Colors.Title,
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    else {
+                        SOHResponse?.let {
+                            Text(
+                                text = it.predicted_SOH,
+                                color = Colors.Title,
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
                     Text(
                         text = "AI 배터리 충전 효율 분석",
                         color = Colors.Title,
@@ -115,7 +183,7 @@ fun AIImageScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
-                    UrlImageExample()
+                    Image(bitmap)
                 }
             }
         }

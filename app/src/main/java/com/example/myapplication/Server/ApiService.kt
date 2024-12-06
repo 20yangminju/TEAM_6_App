@@ -14,20 +14,20 @@ data class TempRequest(val car_device_number: String, val module_number: Int)
 data class chargeRequest(val longitude: Float, val latitude: Float)
 data class chargeResponse(val name: String, val address: String, val latitude: Float, val longitude: Float)
 
+
+
 interface ApiService {
-    @POST("/cars/batteryTemp/app")
+    @POST("cars/batteryTemp/app")
     suspend fun temperature(@Body tempRequest: TempRequest): TempResponse
 
-    @POST("/login")
+    @POST("login")
     fun login(@Body loginRequest: LoginRequest): Call<Void>  // 서버로 로그인 요청
 
-    @POST("/register")
+    @POST("register")
     fun register(@Body registerRequest: RegisterRequest): Call<Void>  // 회원가입 요청
 
-    @POST("/find-charger")
+    @POST("find-charger")
     suspend fun find_charger(@Body chargeRequest: chargeRequest): chargeResponse
-
-
 }
 
 

@@ -28,7 +28,7 @@ import com.example.myapplication.screens.PrivacyPolicyScreen
 import com.example.myapplication.screens.TermsOfServiceScreen
 import com.example.myapplication.screens.UserInfoScreen
 import com.example.myapplication.screens.VersionInfoScreen
-import com.example.myapplication.ui.theme.AIImageScreen
+import com.example.myapplication.AIImageScreen
 
 data class LoginData(
     var id: String = "null",
@@ -40,7 +40,7 @@ fun SetupNavGraph(navController: NavHostController,
                   notificationViewModel: NotificationViewModel) {
     val context = LocalContext.current
 
-    NavHost(navController = navController, startDestination = "main") {
+    NavHost(navController = navController, startDestination = "FirstScreen") {
         composable("FirstScreen") {
             FirstScreen(context, onNavigateToLogin = {
                 navController.navigate("Login")

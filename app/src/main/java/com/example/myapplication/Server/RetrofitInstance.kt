@@ -1,18 +1,25 @@
 // RetrofitInstance.kt
 package com.example.myapplication.Server
 
-import ApiService
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
-object RetrofitInstance {
-    private const val BASE_URL = "http://3.39.234.31:4000" // 에뮬레이터의 로컬호스트 주소
+object Retrofit {
+    private const val BASE_URL = "http://3.34.173.28:4000/"
 
-    val api: ApiService by lazy {
+    private val client = OkHttpClient.Builder().connectTimeout(300, TimeUnit.SECONDS)
+        .readTimeout(300, TimeUnit.SECONDS)
+        .writeTimeout(300, TimeUnit.SECONDS)
+        .build()
+
+    val api: AiApi by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
+            .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ApiService::class.java)
+            .create(AiApi::class.java)
     }
 }
