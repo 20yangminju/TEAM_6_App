@@ -54,6 +54,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.example.myapplication.navigation.BottomNavigationBar
@@ -71,6 +72,7 @@ import java.util.Locale
 
 import coil.compose.rememberImagePainter
 import com.example.myapplication.network.RetrofitInstance
+import com.example.myapplication.resource.NotificationViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -80,13 +82,22 @@ import kotlinx.coroutines.withContext
 fun BatteryChargeScreen(navController: NavController,
                         onNavigateToSettings: () -> Unit,
                         onNavigateToNotifications: () -> Unit,
-                        onNavigateAIscreen: () -> Unit
+                        onNavigateAIscreen: () -> Unit,
+                        notificationViewModel: NotificationViewModel
 ) {
-
+//    val batteryHistory1 = listOf(
+//        Pair("10:00", 20),
+//        Pair("11:00", 50),
+//        Pair("12:00", 80),
+//        Pair("13:00", 40),
+//        Pair("14:00", 70)
+//    )
+    val batteryHistory1 = remember { mutableStateListOf<Pair<String, Int>>() }
     val recommendedChargeDate = Calendar.getInstance().apply {
         add(Calendar.DAY_OF_YEAR, 30) // 30일 뒤의 날짜로 설정
     }
 
+    var currentDate by remember { mutableStateOf(LocalDate.now()) }
     val lastChargeDate = LocalDate.now() // 마지막 충전 날짜 → 추후 수정 필요
     val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     val recommendedChargeDateText = dateFormatter.format(recommendedChargeDate.time)
@@ -95,12 +106,15 @@ fun BatteryChargeScreen(navController: NavController,
 
     var batteryPercentage by remember { mutableStateOf(0) }
     var charging by remember { mutableStateOf(0) }
+    var remainingHour by remember { mutableStateOf(0) } // 남은 시간 (시간)
+    var remainingMinute by remember { mutableStateOf(0) } // 남은 시간 (분)
+    var previousCharging by remember { mutableStateOf(-1) }
     var expanded by remember { mutableStateOf(false) }
     var selectedCount by remember { mutableStateOf(1) }
     var saveCount by remember { mutableStateOf(0) }
     var showTooltip by remember { mutableStateOf(false) }
-
     val batteryHistory = remember { mutableStateListOf<Pair<String, Int>>() } // → 추후 수정 필요
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         try {
@@ -113,14 +127,38 @@ fun BatteryChargeScreen(navController: NavController,
             withContext(Dispatchers.Main) {
                 batteryPercentage = statusResponse.charging_percent // 충전량
                 charging = statusResponse.charging // 충전 상태
+                remainingHour = statusResponse.Hour
+                remainingMinute = statusResponse.Minit
+
+                val currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
+                batteryHistory1.add(Pair(currentTime, batteryPercentage)) // 배터리 상태 저장
+
+                if (charging == 0 && previousCharging == 1) {
+                    // 충전기 분리 시 알림
+                    saveCount += 1
+                    createNotification(
+                        context = context,
+                        viewModel = notificationViewModel,
+                        status = 1
+                    )
+                    currentDate = LocalDate.now() // 충전기 분리시 현재 날짜 저장
+                }
+                if (saveCount >= selectedCount) { // 일정 이상 충전 시 완속 충전 권장 알림 발송
+                    createNotification(
+                        context = context,
+                        viewModel = notificationViewModel,
+                        status = 3
+                    )
+                    saveCount = 0 // 알림 후 카운트 초기화
+                }
+                previousCharging = charging
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
         while (true) {
             delay(3600000)
-            val currentTime = LocalDateTime.now().format(dateTimeFormatter)
-            batteryHistory.add(Pair(currentTime, batteryPercentage)) // 배터리 상태 저장
+
 
             // 최근 24시간의 데이터만 유지
             if(batteryHistory.size > 24) {
@@ -260,21 +298,30 @@ fun BatteryChargeScreen(navController: NavController,
                                         modifier = Modifier.offset(y = 10.dp)
                                     )
                                 }
+                                Spacer(modifier = Modifier.width(16.dp))
+
+                                // 충전 중 메시지 및 남은 시간
                             }
                         }
 
                         Spacer(modifier = Modifier.width(16.dp)) // 그래프와 텍스트 사이 간격 추가
                         if (charging != 0) {
                             Text(
-                                text = "충전중",
+                                text = "충전중  ",
                                 color = Colors.Button,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center
                             )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "남은 시간: $remainingHour 시간 $remainingMinute 분",
+                                color = Colors.Text,
+                                fontSize = 14.sp
+                            )
                         }
                         // 배터리 상태 멘트
-                        if (batteryPercentage >= 70) {
+                        else if (batteryPercentage >= 70) {
                             Text(
                                 text = "배터리가 충분합니다!",
                                 color = Colors.Text,
@@ -319,8 +366,7 @@ fun BatteryChargeScreen(navController: NavController,
                     Spacer(modifier = Modifier.height(10.dp))
                 }
                 item {
-
-                    //BatteryBarChart(batteryHistory) // 실제 데이터 출력
+                    BatteryBarChart(data = batteryHistory1) // 배터리 현황 그래프화
                 }
                 // 완속 충전 스케줄링 캘린더
                 item {
@@ -369,7 +415,6 @@ fun BatteryChargeScreen(navController: NavController,
                                 (1..5).forEach { count ->
                                     DropdownMenuItem(onClick = {
                                         selectedCount = count
-                                        saveCount = selectedCount
                                         expanded = false
                                     }) {
                                         Text(
@@ -411,7 +456,7 @@ fun BatteryChargeScreen(navController: NavController,
                     }
                 }
                 item {
-                    CalendarApp(recommendedChargeDate = recommendedChargeDate, lastChargeDate)
+                    CalendarApp(recommendedChargeDate = recommendedChargeDate, currentDate = currentDate)
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
