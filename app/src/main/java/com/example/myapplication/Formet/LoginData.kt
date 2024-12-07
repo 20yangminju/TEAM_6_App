@@ -1,7 +1,5 @@
 package com.example.myapplication.Formet
 
-import android.provider.ContactsContract.CommonDataKinds.Nickname
-
 data class LoginData(
     var email: String = "null",
     var password: String = "null"
