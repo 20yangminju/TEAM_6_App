@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myapplication.ui.theme.Colors
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 
 import java.util.Calendar
 import java.util.Locale
@@ -108,7 +109,7 @@ fun CalendarDayName() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarDayList(date: MutableState<Calendar>, recommendedChargeDate: Calendar){
+fun CalendarDayList(date: MutableState<Calendar>, recommendedChargeDate: Calendar, currentDate : LocalDate){
 
     date.value.set(Calendar.DAY_OF_MONTH, 1)
     val today = Calendar.getInstance()
@@ -126,17 +127,20 @@ fun CalendarDayList(date: MutableState<Calendar>, recommendedChargeDate: Calenda
                 repeat(7) { day ->
                     val resultDay = week * 7 + day - monthFirstDay + 1
                     if(resultDay in 1 .. monthDayMax) {
-                        val currentDate = Calendar.getInstance().apply {
+                        val currentDateCal = Calendar.getInstance().apply {
                             time = date.value.time
                             set(Calendar.DAY_OF_MONTH, resultDay)
                         }
-                        val isToday = currentDate.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
-                                currentDate.get(Calendar.MONTH) == today.get(Calendar.MONTH) &&
-                                currentDate.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH)
-                        val isRecommendedDate = currentDate.get(Calendar.YEAR) == recommendedChargeDate.get(Calendar.YEAR) &&
-                                currentDate.get(Calendar.MONTH) == recommendedChargeDate.get(Calendar.MONTH) &&
-                                currentDate.get(Calendar.DAY_OF_MONTH) == recommendedChargeDate.get(Calendar.DAY_OF_MONTH)
+                        val isToday = currentDateCal.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+                                currentDateCal.get(Calendar.MONTH) == today.get(Calendar.MONTH) &&
+                                currentDateCal.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH)
+                        val isRecommendedDate = currentDateCal.get(Calendar.YEAR) == recommendedChargeDate.get(Calendar.YEAR) &&
+                                currentDateCal.get(Calendar.MONTH) == recommendedChargeDate.get(Calendar.MONTH) &&
+                                currentDateCal.get(Calendar.DAY_OF_MONTH) == recommendedChargeDate.get(Calendar.DAY_OF_MONTH)
 
+                        val isCurrentDate = currentDateCal.get(Calendar.YEAR) == currentDate.year &&
+                                currentDateCal.get(Calendar.MONTH) == currentDate.monthValue - 1 &&
+                                currentDateCal.get(Calendar.DAY_OF_MONTH) == currentDate.dayOfMonth
                         Box(
                             modifier = Modifier
                                 .weight(1f)
@@ -145,6 +149,7 @@ fun CalendarDayList(date: MutableState<Calendar>, recommendedChargeDate: Calenda
                                     color = when {
                                         isToday -> Colors.Button // 오늘 날짜는 파란색
                                         isRecommendedDate -> Color.Red // 권장 충전 날짜는 빨간색
+                                        isCurrentDate -> Color.Yellow
                                         else -> Color.Transparent
                                     },
                                     shape = RoundedCornerShape(8.dp)
@@ -168,7 +173,7 @@ fun CalendarDayList(date: MutableState<Calendar>, recommendedChargeDate: Calenda
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun CalendarApp(recommendedChargeDate: Calendar) {
+fun CalendarApp(recommendedChargeDate: Calendar, currentDate : LocalDate) {
     val calendarInstance = Calendar.getInstance()
     val time = remember { mutableStateOf(calendarInstance) }
 
@@ -179,6 +184,6 @@ fun CalendarApp(recommendedChargeDate: Calendar) {
     ) {
         CalendarHeaderBtn(time)
         CalendarDayName()
-        CalendarDayList(time, recommendedChargeDate)
+        CalendarDayList(time, recommendedChargeDate, currentDate)
     }
 }

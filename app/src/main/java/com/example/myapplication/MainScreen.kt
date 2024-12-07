@@ -41,6 +41,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import com.example.myapplication.network.RetrofitInstance
+import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -59,6 +60,8 @@ fun MainScreen(
     }
     val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     val recommendedChargeDateText = dateFormatter.format(recommendedChargeDate.time) // 권장 완속 충전 날짜 → 추후 수정
+    var currentDate by remember { mutableStateOf(LocalDate.now()) }
+
 
     // 주행 관련 변수 설정
     var batteryPercentage by remember { mutableStateOf(0) }
@@ -424,7 +427,7 @@ fun MainScreen(
                     }
                 }
                 item {
-                    CalendarApp(recommendedChargeDate = recommendedChargeDate)
+                    CalendarApp(recommendedChargeDate = recommendedChargeDate, currentDate = currentDate)
                 }
             }
         }
