@@ -94,7 +94,7 @@ fun createNotification(context: Context, viewModel: NotificationViewModel, statu
     val channelName = "Default Channel"
     val notificationText = when {
         // 각 경우마다 다른 알림 출력
-        status == 0 -> "배터리 온도가 너무 높습니다."
+        status == 0 -> "이상온도가 감지되었습니다. 차량을 확인해주세요."
         status == 1 -> "충전기가 분리되었습니다. 차량을 확인해주세요."
         status == 2 -> "셀 밸런스가 틀어졌습니다. 완속 충전을 권장합니다."
         status == 3 -> "충전을 일정 이상 하셨습니다. 배터리 효율을 위해 완속 충전을 권장합니다."// n회 이상 충전 시 완속 충전 권장 알림
