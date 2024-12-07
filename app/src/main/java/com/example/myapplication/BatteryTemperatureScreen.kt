@@ -24,6 +24,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -395,23 +396,45 @@ fun BatteryTemperatureScreen(
                     )
                 }}
                 item {
-                    Box(
+                    Button(
+                        onClick = {
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${nearestStation}")
+                            )
+                            context.startActivity(intent)
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp)
-                            .background(Color.LightGray)
-                            .clickable {
-                                val intent = Intent(
-                                    Intent.ACTION_VIEW,
-                                    Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${nearestStation}")
-                                )
-                                context.startActivity(intent)
-                            },
-                        contentAlignment = Alignment.Center
+                            .padding(16.dp)
+                            .height(56.dp), // 버튼 높이 설정
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Colors.Button) // 버튼 배경색 설정
                     ) {
-                        Text("지도 표시 (클릭하여 길찾기)", color = Color.White)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // 아이콘 추가
+                            Icon(
+                                imageVector = Icons.Default.Search, // 기본 아이콘: 지도 아이콘
+                                contentDescription = "지도 아이콘",
+                                tint = Color.White, // 아이콘 색상
+                                modifier = Modifier.size(24.dp) // 아이콘 크기 설정
+                            )
+                            Spacer(modifier = Modifier.width(8.dp)) // 아이콘과 텍스트 간 간격
+                            // 버튼 텍스트
+                            Text(
+                                text = "클릭하여 길찾기",
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
+                    Spacer(modifier = Modifier.width(30.dp))
                 }
+
+
+
             }
         }
     )
