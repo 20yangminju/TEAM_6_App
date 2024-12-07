@@ -77,6 +77,7 @@ fun SetupNavGraph(navController: NavHostController,
                 onNavigateAIscreen = { navController.navigate("AIScreen")},
                 onNavigateToSettings = { navController.navigate("Setting") },
                 onNavigateToNotifications = { navController.navigate("AlarmScreen") },
+                notificationViewModel = notificationViewModel
             ) }
         composable("batteryTemperature") {
             BatteryTemperatureScreen(
