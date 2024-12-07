@@ -46,11 +46,12 @@ fun CellBalanceScreen(
     }
     val cells by viewModel.cells.collectAsState()
     val safePercentage = cells.count { it.voltageDeviation <= 20 }.toFloat() / cells.size * 100
+    val hasCriticalCells = cells.any { it.voltageDeviation < 3.0f } // 하나라도 기준치 이하 확인
     val context = LocalContext.current
 
     // 셀 밸런스가 틀어졌을 때 알림
     LaunchedEffect(safePercentage) {
-        if (safePercentage < 50) {
+        if (hasCriticalCells) {
             createNotification(context, notificationViewModel, status = 2)
         }
     }
@@ -97,7 +98,7 @@ fun CellBalanceScreen(
                     color = Colors.Title,
                     modifier = Modifier.padding(16.dp)
                 )
-                CellBalanceStatus(safePercentage)
+                CellBalanceStatus(safePercentage, hasCriticalCells = hasCriticalCells)
                 Spacer(modifier = Modifier.height(15.dp))
             }
         },
@@ -121,27 +122,34 @@ fun CellBalanceScreen(
 }
 
 @Composable
-fun CellBalanceStatus(safePercentage: Float) {
+fun CellBalanceStatus(safePercentage: Float, hasCriticalCells: Boolean) {
     val (icon, message, color) = when {
-        safePercentage >= 70 -> {
-            Triple(
-                Icons.Default.CheckCircle,
-                "셀 밸런스가 안전하게 유지되고 있습니다!",
-                Color(0xFF4CAF50) // 초록색
-            )
-        }
-        safePercentage > 50 && safePercentage < 70 ->{
-            Triple(
-                Icons.Default.Info,
-                "셀 밸런스의 관리가 필요합니다.",
-                Color(0xFFFFC107) // 노란색
-            )
-        }
-        else -> {
+        hasCriticalCells -> {
             Triple(
                 Icons.Default.Warning,
                 "셀 밸런싱 작업 진행이 시급합니다.",
                 Color(0xFFF44336) // 빨간색
+            )
+        }
+//        safePercentage >= 70 -> {
+//            Triple(
+//                Icons.Default.CheckCircle,
+//                "셀 밸런스가 안전하게 유지되고 있습니다!",
+//                Color(0xFF4CAF50) // 초록색
+//            )
+//        }
+//        safePercentage > 50 && safePercentage < 70 -> {
+//            Triple(
+//                Icons.Default.Info,
+//                "셀 밸런스의 관리가 필요합니다.",
+//                Color(0xFFFFC107) // 노란색
+//            )
+//        }
+        else -> {
+            Triple(
+                Icons.Default.CheckCircle,
+                "셀 밸런스가 안전하게 유지되고 있습니다!",
+                Color(0xFF4CAF50) // 초록색
             )
         }
     }
@@ -183,7 +191,7 @@ fun CellBox(cell: CellData) {
         Pair((15..60).random(), "2024-11-08 12:${10 + it} PM")
     }
 
-    val isSafe = cell.voltageDeviation <= 20
+    val isSafe = cell.voltageDeviation in 2.7f..3.3f
     val backgroundColor = if (isSafe) Color(0xFF87CEEB).copy(alpha = 0.8f) else Color.Red.copy(alpha = 0.8f)
     val borderColor = if (isSafe) Color(0xFF87CEEB).copy(alpha = 0.8f) else Color.Red.copy(alpha = 0.8f)
 
