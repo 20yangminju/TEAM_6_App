@@ -336,42 +336,6 @@ fun BatteryTemperatureScreen(
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
-                                imageVector = Icons.Default.LocationOn,
-                                contentDescription = "현 위치 아이콘",
-                                tint = Colors.Text,
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Text(
-                                text = "현재 위치:",
-                                fontWeight = FontWeight.Bold,
-                                color = Colors.Text,
-                                modifier = Modifier.padding(start = 4.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Box(
-                            modifier = Modifier
-                                .background(Colors.Background, shape = RoundedCornerShape(8.dp))
-                                .padding(horizontal = 12.dp, vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = currentLocation,
-                                color = Color.White
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
                                 imageVector = Icons.Default.Search,
                                 contentDescription = "가까운 충전소 아이콘",
                                 tint = Colors.Text,
@@ -397,6 +361,43 @@ fun BatteryTemperatureScreen(
                             )
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = "현 위치 아이콘",
+                                tint = Colors.Text,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Text(
+                                text = "주소:",
+                                fontWeight = FontWeight.Bold,
+                                color = Colors.Text,
+                                modifier = Modifier.padding(start = 4.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(Colors.Background, shape = RoundedCornerShape(8.dp))
+                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = currentLocation,
+                                color = Color.White
+                            )
+                        }
+                    }
+
 
 
                     if (showStationDialog) {

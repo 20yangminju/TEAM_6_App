@@ -14,8 +14,8 @@ data class TempHistoryRequest(val device_number: String, val module_number: Int,
 data class TempHistoryItem(val device_number: String, val module_number: Int, val module_temp: Float, val created_at: String)
 
 data class CellRequest(val device_number: String, val ten_num: Int)
-data class CellResponse(val cell_00: Int, val cell_01: Int, val cell_02: Int, val cell_03: Int, val cell_04: Int,
-                        val cell_05: Int, val cell_06: Int, val cell_07: Int, val cell_08: Int, val cell_09: Int,)
+data class CellResponse(val cell_00: Float, val cell_01: Float, val cell_02: Float, val cell_03: Float, val cell_04: Float,
+                        val cell_05: Float, val cell_06: Float, val cell_07: Float, val cell_08: Float, val cell_09: Float,)
 
 data class StatusRequest(val device_number: String)
 data class StatusResponse(val charging_percent: Int, val charching: Int, val Hour: Int, val Minit: Int)
@@ -33,7 +33,7 @@ interface ApiService {
     suspend fun tempHistory(@Body tempHistoryRequest: TempHistoryRequest): List<TempHistoryItem>
 
     @POST("cars/cellVoltage/app")
-    suspend fun cellvoltage(@Body CellRequest: CellRequest): CellResponse
+    suspend fun cellvoltage(@Body CellRequest: CellRequest): Map<String, Any>
 
     @POST("cars/batteryStatus/app")
     suspend fun status(@Body StatusRequest: StatusRequest): StatusResponse

@@ -16,7 +16,8 @@ class CellBalanceViewModel : ViewModel() {
                 for (tenNum in tenNumRange) {
                     val request = CellRequest(device_number = deviceNumber, ten_num = tenNum)
                     val response = RetrofitInstance.api.cellvoltage(request)
-                    val voltageData = response.toCellData(tenNum)
+                    val voltageData = parseCellResponse(response)
+
                     cellDataList.addAll(voltageData)
                 }
                 _cells.value = cellDataList.take(98)
@@ -27,19 +28,17 @@ class CellBalanceViewModel : ViewModel() {
     }
 }
 
-// Response 확장 함수: 서버 데이터를 CellData로 변환
-fun CellResponse.toCellData(tenNum: Int): List<CellData> {
-    val cells = listOf(
-        CellData(index = tenNum * 10 + 1, voltageDeviation = cell_00),
-        CellData(index = tenNum * 10 + 2, voltageDeviation = cell_01),
-        CellData(index = tenNum * 10 + 3, voltageDeviation = cell_02),
-        CellData(index = tenNum * 10 + 4, voltageDeviation = cell_03),
-        CellData(index = tenNum * 10 + 5, voltageDeviation = cell_04),
-        CellData(index = tenNum * 10 + 6, voltageDeviation = cell_05),
-        CellData(index = tenNum * 10 + 7, voltageDeviation = cell_06),
-        CellData(index = tenNum * 10 + 8, voltageDeviation = cell_07),
-        CellData(index = tenNum * 10 + 9, voltageDeviation = cell_08),
-        CellData(index = tenNum * 10 + 10, voltageDeviation = cell_09)
-    )
-    return cells
+fun parseCellResponse(response: Map<String, Any>): List<CellData> {
+    val cellDataList = mutableListOf<CellData>()
+
+    response.forEach { (key, value) ->
+        if (key.startsWith("cell_") && value is Number) {
+            val cellIndex = key.removePrefix("cell_").toIntOrNull() // "cell_00" -> 0
+            cellIndex?.let {
+                cellDataList.add(CellData(index = cellIndex, voltageDeviation = value.toFloat()))
+            }
+        }
+    }
+    return cellDataList
+
 }

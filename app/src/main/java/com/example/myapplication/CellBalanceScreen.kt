@@ -42,7 +42,7 @@ fun CellBalanceScreen(
 
     // 서버에서 데이터를 가져옴
     LaunchedEffect(Unit) {
-        viewModel.fetchCellData("888777", 0..9)
+        viewModel.fetchCellData("888777", 0 ..9)
     }
     val cells by viewModel.cells.collectAsState()
     val safePercentage = cells.count { it.voltageDeviation <= 20 }.toFloat() / cells.size * 100
@@ -88,6 +88,7 @@ fun CellBalanceScreen(
                     }
                 )
                 Divider(color = Colors.Divider, thickness = 1.dp)
+
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = "셀 밸런스 상태 진단",
@@ -239,4 +240,4 @@ fun CellBox(cell: CellData) {
     )
 }
 
-data class CellData(val index: Int, val voltageDeviation: Int)
+data class CellData(val index: Int, val voltageDeviation: Float)

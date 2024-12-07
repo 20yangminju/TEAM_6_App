@@ -34,7 +34,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberImagePainter
 import com.example.myapplication.Server.Retrofit
 import com.example.myapplication.Server.SOHRequest
 import com.example.myapplication.Server.SOHResponse
@@ -42,8 +41,6 @@ import com.example.myapplication.ui.theme.Colors
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.compose.ui.R
-import okhttp3.ResponseBody
 import androidx.compose.ui.graphics.asImageBitmap
 
 
