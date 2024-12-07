@@ -8,6 +8,8 @@ import com.example.myapplication.ChatBot.ChatScreen
 import LoginScreen
 import MainScreen
 import SettingsScreen
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
@@ -35,6 +37,7 @@ data class LoginData(
     var password : String = "null"
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun SetupNavGraph(navController: NavHostController,
                   notificationViewModel: NotificationViewModel) {
