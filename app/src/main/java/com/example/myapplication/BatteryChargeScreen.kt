@@ -85,14 +85,14 @@ fun BatteryChargeScreen(navController: NavController,
                         onNavigateAIscreen: () -> Unit,
                         notificationViewModel: NotificationViewModel
 ) {
-//    val batteryHistory1 = listOf(
-//        Pair("10:00", 20),
-//        Pair("11:00", 50),
-//        Pair("12:00", 80),
-//        Pair("13:00", 40),
-//        Pair("14:00", 70)
-//    )
-    val batteryHistory1 = remember { mutableStateListOf<Pair<String, Int>>() }
+    val batteryHistory1 = remember { mutableStateListOf(
+        Pair("10:00", 20),
+        Pair("11:00", 50),
+        Pair("12:00", 80),
+        Pair("13:00", 40),
+        Pair("14:00", 70)
+    ) }
+//    val batteryHistory1 = remember { mutableStateListOf<Pair<String, Int>>() }
     val recommendedChargeDate = Calendar.getInstance().apply {
         add(Calendar.DAY_OF_YEAR, 30) // 30일 뒤의 날짜로 설정
     }
@@ -131,7 +131,7 @@ fun BatteryChargeScreen(navController: NavController,
                 remainingMinute = statusResponse.Minit
 
                 val currentTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
-                batteryHistory1.add(Pair(currentTime, batteryPercentage)) // 배터리 상태 저장
+                batteryHistory1.add(Pair(currentTime, statusResponse.charging_percent))
 
                 if (charging == 0 && previousCharging == 1) {
                     // 충전기 분리 시 알림
@@ -152,19 +152,15 @@ fun BatteryChargeScreen(navController: NavController,
                     saveCount = 0 // 알림 후 카운트 초기화
                 }
                 previousCharging = charging
+
+                if(batteryHistory.size > 24) {
+                    batteryHistory.removeFirst() // 가장 오래된 기록 삭제
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        while (true) {
-            delay(3600000)
 
-
-            // 최근 24시간의 데이터만 유지
-            if(batteryHistory.size > 24) {
-                batteryHistory.removeFirst() // 가장 오래된 기록 삭제
-            }
-        }
     }
     Scaffold(
         backgroundColor = Colors.Background,
