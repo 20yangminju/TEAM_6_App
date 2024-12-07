@@ -64,6 +64,8 @@ fun BatteryTemperatureScreen(
     var isToHot by remember { mutableStateOf(false) }
     val temperatureHistory = remember { mutableStateListOf("32°C", "33°C", "34°C") }
     var showAlert by remember { mutableStateOf(false) }
+    var selectedModuleHistory by remember { mutableStateOf<List<String>>(emptyList()) }
+    var isHistoryDialogVisible by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
     // GPS 변수
@@ -101,10 +103,10 @@ fun BatteryTemperatureScreen(
     LaunchedEffect(Unit) {
         try {
             isRequestFailed = false
-            val request_1 = TempRequest(car_device_number = "674마5387", 1)
-            val request_2 = TempRequest(car_device_number = "674마5387", 2)
-            val request_3 = TempRequest(car_device_number = "674마5387", 3)
-            val request_4 = TempRequest(car_device_number = "674마5387", 4)
+            val request_1 = TempRequest(device_number = "888777", 1)
+            val request_2 = TempRequest(device_number = "888777", 2)
+            val request_3 = TempRequest(device_number = "888777", 3)
+            val request_4 = TempRequest(device_number = "888777", 4)
             temperatureData1 = RetrofitInstance.api.temperature(request_1)
             temperatureData2 = RetrofitInstance.api.temperature(request_2)
             temperatureData3 = RetrofitInstance.api.temperature(request_3)
@@ -176,6 +178,33 @@ fun BatteryTemperatureScreen(
             }
         }
     }
+    fun onModuleClick(moduleIndex: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val historyRequest = TempHistoryRequest(
+                    device_number = "888777",
+                    module_number = moduleIndex,
+                    page = 1
+                )
+                val historyResponse: List<TempHistoryItem> = RetrofitInstance.api.tempHistory(historyRequest)
+
+                withContext(Dispatchers.Main) {
+                    // 날짜 정렬 (최신순)
+                    val sortedHistory = historyResponse.sortedByDescending { it.created_at }
+
+                    // 날짜 포맷팅 및 리스트 변환
+                    selectedModuleHistory = sortedHistory.map { item ->
+                        val formattedDate = item.created_at.replace("T", " ").replace("Z", "")
+                        "온도: ${item.module_temp}°C\n날짜: $formattedDate"
+                    }
+
+                    isHistoryDialogVisible = true
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     Scaffold(
         backgroundColor = Colors.Background,
@@ -238,13 +267,16 @@ fun BatteryTemperatureScreen(
                         items(4) { index ->
                             TemperatureButton(
                                 title = "온도 모듈 ${index + 1}",
+                                moduleIndex = index + 1,
                                 temperature = when (index) {
                                     0 -> temperatureData1?.module_temp?.toString() ?: "N/A"
                                     1 -> temperatureData2?.module_temp?.toString() ?: "N/A"
                                     2 -> temperatureData3?.module_temp?.toString() ?: "N/A"
                                     else -> temperatureData4?.module_temp?.toString() ?: "N/A"
                                 },
-                                onClick = { showAlert = true }
+                                onClick = { clickedIndex ->
+                                    onModuleClick(clickedIndex)
+                                }
                             )
                         }
                     }
@@ -397,14 +429,29 @@ fun BatteryTemperatureScreen(
             }
         }
     )
+    if (isHistoryDialogVisible) {
+        AlertDialog(
+            onDismissRequest = { isHistoryDialogVisible = false },
+            title = { Text("온도 기록") },
+            text = {
+                TemperatureHistoryList(selectedModuleHistory) // 리스트 전달
+            },
+            confirmButton = {
+                TextButton(onClick = { isHistoryDialogVisible = false }) {
+                    Text("확인")
+                }
+            }
+        )
+    }
 }
 
 
 @Composable
 fun TemperatureButton(
     title: String,
+    moduleIndex: Int, // 모듈 번호를 받아서 사용
     temperature: String,
-    onClick: () -> Unit,
+    onClick: (Int) -> Unit, // 클릭 시 모듈 번호를 전달
     modifier: Modifier = Modifier
 ) {
     val tempValue = temperature.toFloatOrNull() ?: 0f
@@ -421,7 +468,7 @@ fun TemperatureButton(
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { onClick() },
+            .clickable { onClick(moduleIndex) }, // 클릭 시 모듈 번호 전달
         elevation = 8.dp,
         shape = RoundedCornerShape(12.dp),
         backgroundColor = Color.White
@@ -462,4 +509,3 @@ fun TemperatureButton(
         }
     }
 }
-

@@ -1,5 +1,7 @@
 package com.example.myapplication
 
+import StatusRequest
+import StatusResponse
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
@@ -68,6 +70,9 @@ import java.util.Calendar
 import java.util.Locale
 
 import coil.compose.rememberImagePainter
+import com.example.myapplication.network.RetrofitInstance
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 // 배터리 현황 페이지
 @RequiresApi(Build.VERSION_CODES.O)
@@ -77,20 +82,7 @@ fun BatteryChargeScreen(navController: NavController,
                         onNavigateToNotifications: () -> Unit,
                         onNavigateAIscreen: () -> Unit
 ) {
-    // 그래프 테스트용
-    val sampleData = listOf("12:00" to 80,
-        "13:00" to 70,
-        "14:00" to 50,
-        "15:00" to 30,
-        "17:00" to 20,
-        "18:00" to 90,
-        "19:00" to 80,
-        "20:00" to 75,
-        "21:00" to 60,
-        "22:00" to 50,
-        "23:00" to 40,
-        "24:00" to 20
-    )
+
     val recommendedChargeDate = Calendar.getInstance().apply {
         add(Calendar.DAY_OF_YEAR, 30) // 30일 뒤의 날짜로 설정
     }
@@ -101,7 +93,8 @@ fun BatteryChargeScreen(navController: NavController,
     val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     val lastChargeDateText = lastChargeDate.format(dateTimeFormatter)
 
-    val batteryPercentage by remember { mutableStateOf(10) } // → 추후 수정 필요
+    var batteryPercentage by remember { mutableStateOf(0) }
+    var charging by remember { mutableStateOf(0) }
     var expanded by remember { mutableStateOf(false) }
     var selectedCount by remember { mutableStateOf(1) }
     var saveCount by remember { mutableStateOf(0) }
@@ -110,6 +103,20 @@ fun BatteryChargeScreen(navController: NavController,
     val batteryHistory = remember { mutableStateListOf<Pair<String, Int>>() } // → 추후 수정 필요
 
     LaunchedEffect(Unit) {
+        try {
+            // 배터리 상태 요청
+            val statusResponse: StatusResponse = withContext(Dispatchers.IO) {
+                RetrofitInstance.api.status(StatusRequest(device_number = "888777"))
+            }
+
+            // 배터리 충전 상태 업데이트
+            withContext(Dispatchers.Main) {
+                batteryPercentage = statusResponse.charging_percent // 충전량
+                charging = statusResponse.charching // 충전 상태
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         while (true) {
             delay(3600000)
             val currentTime = LocalDateTime.now().format(dateTimeFormatter)
@@ -257,7 +264,15 @@ fun BatteryChargeScreen(navController: NavController,
                         }
 
                         Spacer(modifier = Modifier.width(16.dp)) // 그래프와 텍스트 사이 간격 추가
-
+                        if (charging != 0) {
+                            Text(
+                                text = "충전중",
+                                color = Colors.Button,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            )
+                        }
                         // 배터리 상태 멘트
                         if (batteryPercentage >= 70) {
                             Text(
@@ -304,7 +319,7 @@ fun BatteryChargeScreen(navController: NavController,
                     Spacer(modifier = Modifier.height(10.dp))
                 }
                 item {
-                    BatteryBarChart(data = sampleData) // 테스트용
+
                     //BatteryBarChart(batteryHistory) // 실제 데이터 출력
                 }
                 // 완속 충전 스케줄링 캘린더
