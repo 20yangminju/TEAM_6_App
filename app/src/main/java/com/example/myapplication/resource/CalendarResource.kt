@@ -117,6 +117,7 @@ fun CalendarDayList(date: MutableState<Calendar>, recommendedChargeDate: Calenda
     val monthFirstDay = date.value.get(Calendar.DAY_OF_WEEK) - 1
     val monthWeeksCount = (monthDayMax + monthFirstDay + 6) / 7
 
+
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -147,10 +148,10 @@ fun CalendarDayList(date: MutableState<Calendar>, recommendedChargeDate: Calenda
                                 .padding(13.dp)
                                 .background(
                                     color = when {
-                                        isToday -> Colors.Button // 오늘 날짜는 파란색
-                                        isRecommendedDate -> Color.Red // 권장 충전 날짜는 빨간색
-                                        isCurrentDate -> Color.Yellow
-                                        else -> Color.Transparent
+                                        isCurrentDate -> Color.Yellow // Always highlight current date in yellow
+                                        isToday -> Colors.Button // Highlight today in blue
+                                        isRecommendedDate -> Color.Red // Highlight recommended charge date in red
+                                        else -> Color.Transparent // No color for other days
                                     },
                                     shape = RoundedCornerShape(8.dp)
                                 ),
@@ -159,7 +160,10 @@ fun CalendarDayList(date: MutableState<Calendar>, recommendedChargeDate: Calenda
                             Text(
                                 text = resultDay.toString(),
                                 fontSize = 15.sp,
-                                color = Colors.Text
+                                color = when {
+                                    isCurrentDate -> Color.Black
+                                    else -> Colors.Text
+                                }
                             )
                         }
                     } else {
