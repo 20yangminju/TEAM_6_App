@@ -29,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.example.myapplication.ChatBot.getCurrentLocation
@@ -281,33 +282,17 @@ fun BatteryTemperatureScreen(
                         }
                     }
                     }
-
-                    if (showAlert) {
-                        AlertDialog(
-                            onDismissRequest = { showAlert = false },
-                            title = {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "온도 기록",
-                                        color = Color.Black,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Default.Clear,
-                                        contentDescription = "종료 버튼",
-                                        modifier = Modifier.clickable { showAlert = false }
-                                    )
-                                }
-                            },
-                            text = {
-                                TemperatureHistoryList(temperatureHistory)
-                            },
-                            confirmButton = {}
-                        )
+                    if (isHistoryDialogVisible) {
+                        Dialog(
+                            onDismissRequest = { isHistoryDialogVisible = false } // 배경 클릭 시 닫기
+                        ) {
+                            TemperatureHistoryList(
+                                temperatureHistory = selectedModuleHistory,
+                                onConfirm = { isHistoryDialogVisible = false } // 확인 버튼 클릭 시 닫기
+                            )
+                        }
                     }
+
 
                     ShowTemperatureDialog(
                         showDialog = showDialog,
@@ -430,20 +415,8 @@ fun BatteryTemperatureScreen(
             }
         }
     )
-    if (isHistoryDialogVisible) {
-        AlertDialog(
-            onDismissRequest = { isHistoryDialogVisible = false },
-            title = { Text("온도 기록") },
-            text = {
-                TemperatureHistoryList(selectedModuleHistory) // 리스트 전달
-            },
-            confirmButton = {
-                TextButton(onClick = { isHistoryDialogVisible = false }) {
-                    Text("확인")
-                }
-            }
-        )
-    }
+
+
 }
 
 
